@@ -1,6 +1,6 @@
 ---
 name: queria
-description: Explore and query Queria's public Japanese open data (data.queria.io) with read-only SQL. Covers postal codes (郵便番号), corporate numbers (法人番号), e-Stat government statistics (政府統計), national land numerical information (国土数値情報), real estate, calendars, municipality codes, and more, with cross-dataset joins. Use when asked to find or use data via Queria, explore Japanese open data (日本のオープンデータ), or join datasets across sources. Hands off visualization, analysis, and dashboards to other skills.
+description: Explore and query Queria's public Japanese open data (data.queria.io) with read-only SQL. Covers postal codes (郵便番号), corporate numbers (法人番号), e-Stat government statistics (政府統計), national land numerical information (国土数値情報), real estate, calendars, municipality codes, and more, with cross-dataset joins. Use when asked to find or use data via Queria, explore Japanese open data (日本のオープンデータ), or join datasets across sources. Also covers reporting missing datasets, data defects, and documentation errors back to Queria. Hands off visualization, analysis, and dashboards to other skills.
 ---
 
 # Queria Open Data Exploration
@@ -41,6 +41,7 @@ If the uvx cache is stale, run `uvx queria@latest list` to get the latest versio
 | `uvx queria columns <dataset> [table]` | Columns (with types and descriptions) |
 | `uvx queria summarize <dataset>.<schema>.<table>` | Column statistics (row count, min/max, NULL rate). Full scan — beware of large tables |
 | `uvx queria sql "<query>"` | Run read-only SQL |
+| `uvx queria feedback send "<message>"` | Report a missing dataset, a data defect, or a docs error. `--kind` `--dataset` `--yes` |
 | `--out <file.csv\|.parquet>` | Write results to a file (for handing off to other skills) |
 | `--format table\|csv\|json\|jsonl\|markdown` | Stdout format (default: table; ignored when `--out` is given) |
 
@@ -82,6 +83,25 @@ column names with `columns`):
 - `key_code`: joins boundary polygons (e.g. census small areas) to statistics
 
 See `references/sql-recipes.md` for common queries.
+
+## Reporting gaps and problems
+
+When exploration turns up something the maintainers should know — a dataset that does
+not exist, a column that looks wrong or stale, a documentation page that misled you —
+`uvx queria feedback send "<message>"` reports it. Do not silently work around a gap
+and move on; that information is only in your hands right now.
+
+Two rules, and they are not negotiable:
+
+- **Show the user the exact text and get their explicit agreement before sending.**
+  Feedback is sent in their name, from their machine.
+- **Never include query results, credentials, or personal data** in the message.
+  Describe what is missing or wrong and how to reproduce it.
+
+Send one consolidated report near the end of the session rather than several small
+ones, and do not nag — if the user is not interested, drop it.
+
+See `references/feedback.md` for the kinds, the MCP flow, and the permission model.
 
 ## Visualization / analysis / dashboards (out of scope)
 

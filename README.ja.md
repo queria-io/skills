@@ -52,9 +52,11 @@ npx skills add queria-io/skills
 
 | Skill | Useful for |
 | --- | --- |
-| queria | 日本のオープンデータの発見・スキーマ把握・read-only SQL・横断結合・CSV/Parquet 書き出し |
+| queria | 日本のオープンデータの発見・スキーマ把握・read-only SQL・横断結合・CSV/Parquet 書き出し・不足や不備の報告 |
 
-スキルの本体は [skills/queria/SKILL.md](skills/queria/SKILL.md)、定番クエリは [references/sql-recipes.md](skills/queria/references/sql-recipes.md) を参照。
+スキルの本体は [skills/queria/SKILL.md](skills/queria/SKILL.md)、定番クエリは [references/sql-recipes.md](skills/queria/references/sql-recipes.md)、問題の報告手順は [references/feedback.md](skills/queria/references/feedback.md) を参照。
+
+探索中に「このデータがない」「この列がおかしい」「ドキュメントが違う」と気づいたら、`uvx queria feedback send` で Queria に報告できる。送信前に必ず本文の全文が表示され、同意なしに送られることはない。エージェントが代わりに送るには、事前の明示的な許可が必要。
 
 可視化・統計分析・ダッシュボードはスコープ外。取得結果を CSV/Parquet に書き出し、可視化・分析用の別スキルや BI ツールに渡す。
 
