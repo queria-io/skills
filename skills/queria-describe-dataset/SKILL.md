@@ -1,18 +1,16 @@
 ---
 name: queria-describe-dataset
-description: Decide which layer of a Queria dataset each thing you know belongs to — a column's description, a table's description or ai_context, or the dataset's ai_context — and write keywords, synonyms and examples that do not overlap. Use when writing or fixing dataset.yml / *.table.yml descriptions, ai_context, keywords or synonyms (説明・メタデータの書き方), or when a dataset's caveats have piled up in one place. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
+description: Decide which layer of a Queria dataset each thing you know belongs to — the column, the table, or the dataset — and write keywords and synonyms that do not overlap. Use when writing or fixing descriptions in dataset.yml / *.table.yml, or keywords and synonyms (説明・メタデータの書き方), or when a dataset's caveats have all piled up in one place. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
 ---
 
 # Describing a Queria dataset
 
-A Queria dataset has several places to write down what you know: a column's
-`description`, a table's `description` and `ai_context`, the dataset's `description` and
-`ai_context`, and the cookbook manuscripts in the repository's `docs/*.md`.
+A Queria dataset has three layers to write down what you know — the column, the table
+and the dataset — plus the cookbook manuscripts in the repository's `docs/*.md`.
 
-Deciding case by case means everything ends up in one of them. Queria's own e-Stat dataset
-had a 2-line `description` and an 18-line `ai_context.instructions` — caveats covering
-6 schemas and 30 tables, piled into the coarsest layer there is. That is sorting by
-length, not by meaning.
+Deciding case by case means everything ends up in one of them. Queria's own e-Stat
+dataset had caveats covering 6 schemas and 30 tables piled into the coarsest layer there
+is. That is sorting by length, not by meaning.
 
 Where `queria-publish-dataset` gets the dataset into the catalog, this skill decides
 **which layer each sentence belongs to**.
@@ -26,14 +24,13 @@ to weigh.
 | --- | --- |
 | One column | that column's `description` |
 | One table | that table's `description` |
-| Whether to reach for this table at all | that table's `ai_context.instructions` |
-| More than one table | the dataset's `ai_context.instructions` |
-| What people call this dataset | `keywords` / `synonyms` (below) |
+| More than one table | the dataset's `description` |
+| What people call this dataset | `keywords` / `ai_context.synonyms` (below) |
 | Something you can run as SQL | a cookbook manuscript in `docs/*.md` |
 
 **Once it is written small, do not repeat it upward.** What stays at the top is only what
 you cannot say without comparing several things. A column note copied into the dataset's
-`instructions` means one of the two copies goes stale.
+description means one of the two copies goes stale.
 
 ## What is worth writing
 
@@ -47,8 +44,8 @@ you cannot say without comparing several things. A column note copied into the d
 Push them down to the smallest layer where they hold.
 
 - "This column mixes totals with their breakdown" → that column's `description`
-- "This table's grain differs from the boundary data" → that table's `ai_context`
-- "These two schemas join at different grains" → the dataset's `instructions`
+- "This table's grain differs from the boundary data" → that table's `description`
+- "These two schemas join at different grains" → the dataset's `description`
 
 ## keywords vs synonyms
 
@@ -67,30 +64,11 @@ not know the official name still finds it.
 Keep `keywords` to a few that classify the dataset. Words specific to one table go in that
 table's own `keywords`, not the dataset's.
 
-## examples and the cookbook
+## SQL belongs in the cookbook
 
-`examples` holds **questions this dataset can answer**, one per line, in the language of
-its users. No SQL.
-
-```yaml
-examples:
-  - 小地域の年齢構成を地図に出したい
-  - 市区町村別の人口の推移を出したい
-```
-
-The SQL that answers them goes in the repository's `docs/*.md`. Matching the wording turns
-the two into a path.
-
-## Keep ai_context at three fields
-
-`instructions` / `synonyms` / `examples` match the fields recommended by Apache Ossie. It
-is tempting to break caveats or out-of-scope uses into new keys — write them as prose
-inside `instructions` instead. Ossie says of its current version, "Schema is mutable; do
-not depend on this version in production", and the name `ai_context` is still under
-discussion upstream. Inventing keys means fixing it twice.
-
-`instructions` reads well in this order: what it is good for → what is easy to get wrong
-(nulls, duplicates, digits, units) → the coverage and what falls outside it.
+Do not put runnable SQL in a description. It goes in the repository's `docs/*.md`
+manuscripts, which are picked up as the dataset's cookbook. A description is what keeps
+someone from getting it wrong; a manuscript is what they can run.
 
 ## Doing a pass over a real dataset
 
@@ -108,7 +86,7 @@ See `references/splitting-a-dataset.md` for a worked before/after on a real data
 - Could this sentence be said about something smaller than where you put it?
 - Is the same thing written in two places?
 - Do `keywords` and `synonyms` share a word?
-- Did any SQL end up in `examples`?
+- Did any SQL end up in a description?
 - Does `uvx queria validate` still pass?
 
 Full reference: https://docs.queria.io/publish/writing-descriptions — if this skill and
