@@ -53,12 +53,16 @@ You can also clone this repository and copy the skill folder into your agent's s
 | Skill | Useful for |
 | --- | --- |
 | queria | Discovering Japanese open data, inspecting schemas, read-only SQL, cross-dataset joins, CSV/Parquet export, reporting gaps back to Queria |
+| queria-publish-dataset | Publishing a dataset of your own: registering it, declaring it, building, pushing |
+| queria-describe-dataset | Deciding which layer each description, `ai_context` entry, keyword or synonym belongs to |
 
 The skill itself lives in [skills/queria/SKILL.md](skills/queria/SKILL.md); common queries are in [references/sql-recipes.md](skills/queria/references/sql-recipes.md), and how to report problems is in [references/feedback.md](skills/queria/references/feedback.md).
 
 When exploration turns up a missing dataset, a data defect, or a documentation error, the skill can report it with `uvx queria feedback send`. Nothing is ever sent without you seeing the exact text and agreeing to it, and agents need your explicit permission before they can send anything at all.
 
 Visualization, statistical analysis, and dashboards are out of scope. Export results to CSV/Parquet and hand them to visualization/analysis skills or BI tools.
+
+If you publish data rather than consume it, the two publishing skills cover the whole path from `queria create` to a dataset someone else can read. The reference is at [docs.queria.io/publish](https://docs.queria.io/publish).
 
 ## Requirements
 
