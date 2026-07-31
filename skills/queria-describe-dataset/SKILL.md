@@ -1,6 +1,6 @@
 ---
 name: queria-describe-dataset
-description: Decide which layer of a Queria dataset each thing you know belongs to — the column, the table, or the dataset — and write keywords and synonyms that do not overlap. Use when writing or fixing descriptions in dataset.yml / *.table.yml, or keywords and synonyms (説明・メタデータの書き方), or when a dataset's caveats have all piled up in one place. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
+description: Decide which layer of a Queria dataset each thing you know belongs to — the column, the table, or the dataset — and put the names people search by into keywords. Use when writing or fixing descriptions in dataset.yml / *.table.yml, or keywords (説明・メタデータの書き方), or when a dataset's caveats have all piled up in one place. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
 ---
 
 # Describing a Queria dataset
@@ -25,7 +25,7 @@ to weigh.
 | One column | that column's `description` |
 | One table | that table's `description` |
 | More than one table | the dataset's `description` |
-| What people call this dataset | `keywords` / `ai_context.synonyms` (below) |
+| What people call this dataset | `keywords` (below) |
 | Something you can run as SQL | a cookbook manuscript in `docs/*.md` |
 
 **Once it is written small, do not repeat it upward.** What stays at the top is only what
@@ -47,22 +47,17 @@ Push them down to the smallest layer where they hold.
 - "This table's grain differs from the boundary data" → that table's `description`
 - "These two schemas join at different grains" → the dataset's `description`
 
-## keywords vs synonyms
+## keywords
 
-**Words that could apply to other datasets are `keywords`. Names that only ever mean this
-one are `synonyms`.**
+`keywords` feeds the search index. Put in the words that classify the dataset **and the
+other names people call it by**, so someone who does not know the official name still
+finds it.
 
 ```yaml
-keywords: [statistics, population, society]     # could apply to others
-ai_context:
-  synonyms: [e-Stat, SSDS, 政府統計]              # only ever means this one
+keywords: [statistics, population, society, e-Stat, SSDS, 政府統計]
 ```
 
-Never put the same word in both. `synonyms` feeds the search index, so someone who does
-not know the official name still finds it.
-
-Keep `keywords` to a few that classify the dataset. Words specific to one table go in that
-table's own `keywords`, not the dataset's.
+Words specific to one table go in that table's own `keywords`, not the dataset's.
 
 ## SQL belongs in the cookbook
 
@@ -77,7 +72,7 @@ someone from getting it wrong; a manuscript is what they can run.
 2. Write each finding at the smallest layer where it holds.
 3. Re-read what was already at the dataset level and push down anything that turned out to
    be about one table or one column.
-4. Check `keywords` against `synonyms` for shared words.
+4. Check that the names people actually use are in `keywords`.
 
 See `references/splitting-a-dataset.md` for a worked before/after on a real dataset.
 
@@ -85,7 +80,7 @@ See `references/splitting-a-dataset.md` for a worked before/after on a real data
 
 - Could this sentence be said about something smaller than where you put it?
 - Is the same thing written in two places?
-- Do `keywords` and `synonyms` share a word?
+- Are the other names people use in `keywords`?
 - Did any SQL end up in a description?
 - Does `uvx queria validate` still pass?
 

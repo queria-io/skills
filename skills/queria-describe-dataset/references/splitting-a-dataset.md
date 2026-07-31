@@ -54,15 +54,13 @@ Only the last two rows above. Both are about how two schemas relate, so there is
 smaller to put them. Everything else moved down, and the dataset's description went back
 to answering "what is this" for someone scanning a list.
 
-## The keyword overlap
+## The keywords
 
-`e-Stat` appeared in both `keywords` and `ai_context.synonyms`. It only ever means this
-dataset, so it belongs in `synonyms` alone:
+The dataset classified itself in four words, which is not how anyone searches for it. The
+names people actually type went in too:
 
 ```yaml
-keywords: [統計, 人口, 社会]
-ai_context:
-  synonyms: [e-Stat, 政府統計, 社会・人口統計体系, SSDS, 国勢調査, 小地域, 消費者物価指数]
+keywords: [統計, 政府統計, e-Stat, 社会・人口統計体系, SSDS, 国勢調査, 小地域, 消費者物価指数, 人口, 社会]
 ```
 
 ## The tell
