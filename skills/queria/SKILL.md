@@ -1,6 +1,6 @@
 ---
 name: queria
-description: Explore and query Queria's public Japanese open data (data.queria.io) with read-only SQL. Covers postal codes (郵便番号), corporate numbers (法人番号), e-Stat government statistics (政府統計), national land numerical information (国土数値情報), real estate, calendars, municipality codes, and more, with cross-dataset joins. Use when asked to find or use data via Queria, explore Japanese open data (日本のオープンデータ), or join datasets across sources. Also covers reporting missing datasets, data defects, and documentation errors back to Queria. Hands off visualization, analysis, and dashboards to other skills.
+description: Explore and query Queria's public Japanese open data (data.queria.io) with read-only DuckDB SQL. Covers postal codes (郵便番号), corporate numbers (法人番号), e-Stat government statistics (政府統計), national land numerical information (国土数値情報), real estate, calendars, municipality codes, and more, with cross-dataset joins. Use when asked to find or use data via Queria, explore Japanese open data (日本のオープンデータ), or join datasets across sources. Also covers reporting missing datasets, data defects, and documentation errors back to Queria. Hands off visualization, analysis, and dashboards to other skills.
 ---
 
 # Queria Open Data Exploration
@@ -55,6 +55,9 @@ If the uvx cache is stale, run `uvx queria@latest list` to get the latest versio
 6. Hand off: if visualization or analysis is needed, write out with `--out result.parquet` and pass it to another skill
 
 ### Writing SQL
+
+The engine is DuckDB, so write DuckDB SQL rather than PostgreSQL-shaped SQL.
+Dialect reference: https://duckdb.org/docs/stable/sql/introduction
 
 Reference tables as `dataset.schema.table` (e.g. `zipcode.main.mart_zipcode`).
 Each dataset is a separate catalog, but referencing multiple datasets attaches them
