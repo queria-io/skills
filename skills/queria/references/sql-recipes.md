@@ -8,6 +8,35 @@ for analysis-ready data.
 Data values (place names, item names, categories) are in Japanese — filter and search
 with Japanese strings as shown below.
 
+## DuckDB dialect
+
+Queries run on DuckDB. Most PostgreSQL habits carry over, but not all — `to_char`
+does not exist here, for example; use `strftime(d, '%Y-%m')`.
+
+Forms DuckDB has and PostgreSQL does not. Run them one at a time — `queria sql` takes
+a single statement per call, and it reads the leading keyword to check the statement is
+read-only, so a query cannot start with a `--` comment either.
+
+```sql
+SELECT prefecture, count(*) AS c FROM lg_code.main.mart_lg_code GROUP BY ALL;
+
+SELECT * EXCLUDE (geometry) FROM nlftp.boundary.prefecture;
+
+SELECT arg_max(area_name, value) AS most_populous   -- one column's value at another column's max
+FROM e_stat.ssds.a_pref_population
+WHERE item_name = 'A1101_総人口' AND area_name <> '全国';
+
+SELECT 1 AS a UNION BY NAME SELECT 2 AS b;   -- union on column names rather than position
+```
+
+`QUALIFY` filters window results without wrapping the query in a subquery; the e-Stat
+recipes below use it to drop breakdown rows.
+
+`PIVOT` is the exception. `queria sql` rejects both `PIVOT tbl ON ...` and
+`SELECT * FROM (PIVOT ...)` with "Only one statement per query (found 2)", so it is
+unavailable here. Cross-tabulate with `count(*) FILTER (WHERE ...)` (standard SQL,
+not DuckDB-specific) or `CASE WHEN` instead.
+
 ## Discovery and schema inspection
 
 ```bash
@@ -104,15 +133,39 @@ ORDER BY population DESC LIMIT 20
 
 ## Geography: national land numerical information (GIS)
 
-Boundary polygons have a `geometry` column. The spatial extension is preloaded, so
-`ST_*` functions work:
+Boundary polygons have a `geometry` column and the spatial extension is preloaded, so
+`ST_*` functions work. Coordinates are longitude/latitude in degrees (`ST_X` is the
+longitude), which means plain `ST_Area` and `ST_Distance` return degrees — usable for
+relative comparison, meaningless as an area or a distance.
+
+Real-world units come from the `_Spheroid` functions, and those read latitude first.
+`queria sql` accepts read-only statements only, so `SET geometry_always_xy = true` is
+not available; flip the axes per call with `ST_FlipCoordinates` instead. Skipping the
+flip yields `nan` rather than an error, and `nan` sorts to the top under
+`ORDER BY ... DESC`.
+
+Prefecture areas in km² (北海道 comes out at 83,417.9, slightly under the 国土地理院
+面積調):
 ```sql
-SELECT prefecture_name, ST_Area(geometry) AS area
-FROM nlftp.boundary.prefecture
-ORDER BY area DESC LIMIT 10
+SELECT prefecture_name, round(ST_Area_Spheroid(ST_FlipCoordinates(geometry)) / 1e6, 1) AS km2
+FROM nlftp.boundary.prefecture ORDER BY km2 DESC LIMIT 10
 ```
-(Coordinates are lat/lon, so areas are in degrees — suitable for relative comparison
-and maps. Check column names with `uvx queria columns nlftp`.)
+
+Distance between two stations in metres:
+```sql
+WITH t AS (SELECT geometry AS g FROM nlftp.railway.station
+           WHERE station_name = '東京' AND operator = '東日本旅客鉄道'
+           ORDER BY station_code LIMIT 1),
+     s AS (SELECT geometry AS g FROM nlftp.railway.station
+           WHERE station_name = '新宿' AND operator = '東日本旅客鉄道'
+           ORDER BY station_code LIMIT 1)
+SELECT ST_Distance_Spheroid(ST_FlipCoordinates(t.g)::POINT_2D,
+                            ST_FlipCoordinates(s.g)::POINT_2D) AS metres
+FROM t, s
+```
+(A station name matches one row per line served, so pick a row deterministically —
+without the `ORDER BY` the distance changes between runs. Check column names with
+`uvx queria columns nlftp`.)
 
 ## Real estate
 
