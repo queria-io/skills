@@ -14,8 +14,7 @@ Queries run on DuckDB. Most PostgreSQL habits carry over, but not all — `to_ch
 does not exist here, for example; use `strftime(d, '%Y-%m')`.
 
 Forms DuckDB has and PostgreSQL does not. Run them one at a time — `queria sql` takes
-a single statement per call, and it reads the leading keyword to check the statement is
-read-only, so a query cannot start with a `--` comment either.
+a single statement per call.
 
 ```sql
 SELECT prefecture, count(*) AS c FROM lg_code.main.mart_lg_code GROUP BY ALL;
@@ -32,10 +31,16 @@ SELECT 1 AS a UNION BY NAME SELECT 2 AS b;   -- union on column names rather tha
 `QUALIFY` filters window results without wrapping the query in a subquery; the e-Stat
 recipes below use it to drop breakdown rows.
 
-`PIVOT` is the exception. `queria sql` rejects both `PIVOT tbl ON ...` and
-`SELECT * FROM (PIVOT ...)` with "Only one statement per query (found 2)", so it is
-unavailable here. Cross-tabulate with `count(*) FILTER (WHERE ...)` (standard SQL,
-not DuckDB-specific) or `CASE WHEN` instead.
+`PIVOT` turns a long table wide without spelling out a column per value, which suits
+the e-Stat tables below — they carry one row per (indicator, area, year). Total
+population by prefecture, one column per year:
+
+```sql
+PIVOT (SELECT area_name, year, value FROM e_stat.ssds.a_pref_population
+       WHERE item_name = 'A1101_総人口' AND area_name <> '全国' AND year >= 2021)
+ON year USING max(value)
+ORDER BY area_name
+```
 
 ## Discovery and schema inspection
 
