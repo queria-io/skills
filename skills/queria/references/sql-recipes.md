@@ -28,8 +28,9 @@ WHERE item_name = 'A1101_総人口' AND area_name <> '全国';
 SELECT 1 AS a UNION BY NAME SELECT 2 AS b;   -- union on column names rather than position
 ```
 
-`QUALIFY` filters window results without wrapping the query in a subquery; the e-Stat
-recipes below use it to drop breakdown rows.
+`QUALIFY` filters window results without wrapping the query in a subquery — e.g.
+`QUALIFY ROW_NUMBER() OVER (PARTITION BY area ORDER BY year DESC) = 1` keeps the latest
+row per area.
 
 `PIVOT` turns a long table wide without spelling out a column per value, which suits
 the long-format e-Stat tables below (`item_name`, `area_name`, `year`, `value`). Total
@@ -42,8 +43,8 @@ ON year USING max(value)
 ORDER BY area_name
 ```
 
-PIVOT requires an aggregate, so `max` is doing the same job as the `QUALIFY` in the
-e-Stat recipes below: where a cell has more than one row, the largest wins. Choose the
+PIVOT requires an aggregate. Each cell here holds exactly one row, so `max` only
+satisfies the syntax. On a source where a cell can hold several rows, choose the
 aggregate to match how that cell should collapse.
 
 ## Discovery and schema inspection
@@ -94,9 +95,10 @@ GROUP BY 1 ORDER BY subsidies DESC
 
 ## Statistics: e-Stat SSDS (System of Social and Demographic Statistics)
 
-SSDS tables are long-format (`item_name`, `area_name`, `year`, `value`). Filter
-indicators by `item_name`. The same (area, year) may contain multiple `cat01` values
-or time points, so also filter by `cat01` when needed.
+SSDS tables are long-format (`item_name`, `area_name`, `year`, `value`) and unique on
+(`cat01`, `area`, `year`), so one indicator in one area and year is one row. Inside a
+table `item_name` maps 1:1 to `cat01`, so filtering by `item_name` needs no deduping.
+Spellings of `item_name` differ between tables, so filter by `cat01` to span tables.
 
 Find available indicator names (総人口 = total population):
 ```sql
@@ -111,7 +113,6 @@ WHERE item_name = 'A1101_総人口'
   AND year = (SELECT MAX(year) FROM e_stat.ssds.a_pref_population
               WHERE item_name = 'A1101_総人口')
   AND area_name <> '全国'
-QUALIFY ROW_NUMBER() OVER (PARTITION BY area_name ORDER BY value DESC) = 1
 ORDER BY value DESC
 ```
 
@@ -134,7 +135,6 @@ JOIN lg_code.main.mart_lg_code g ON p.area = g.lg_code_5
 WHERE p.item_name = 'A1101_総人口'
   AND p.year = (SELECT MAX(year) FROM e_stat.ssds.a_municipal_population
                 WHERE item_name = 'A1101_総人口')
-QUALIFY ROW_NUMBER() OVER (PARTITION BY p.area ORDER BY p.value DESC) = 1  -- dedupe breakdown rows
 ORDER BY population DESC LIMIT 20
 ```
 (Match code digit counts on both sides with `columns` before joining. e_stat `area` is
