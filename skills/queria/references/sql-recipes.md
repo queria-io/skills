@@ -133,15 +133,39 @@ ORDER BY population DESC LIMIT 20
 
 ## Geography: national land numerical information (GIS)
 
-Boundary polygons have a `geometry` column. The spatial extension is preloaded, so
-`ST_*` functions work:
+Boundary polygons have a `geometry` column and the spatial extension is preloaded, so
+`ST_*` functions work. Coordinates are longitude/latitude in degrees (`ST_X` is the
+longitude), which means plain `ST_Area` and `ST_Distance` return degrees — usable for
+relative comparison, meaningless as an area or a distance.
+
+Real-world units come from the `_Spheroid` functions, and those read latitude first.
+`queria sql` accepts read-only statements only, so `SET geometry_always_xy = true` is
+not available; flip the axes per call with `ST_FlipCoordinates` instead. Skipping the
+flip yields `nan` rather than an error, and `nan` sorts to the top under
+`ORDER BY ... DESC`.
+
+Prefecture areas in km² (北海道 comes out at 83,417.9, slightly under the 国土地理院
+面積調):
 ```sql
-SELECT prefecture_name, ST_Area(geometry) AS area
-FROM nlftp.boundary.prefecture
-ORDER BY area DESC LIMIT 10
+SELECT prefecture_name, round(ST_Area_Spheroid(ST_FlipCoordinates(geometry)) / 1e6, 1) AS km2
+FROM nlftp.boundary.prefecture ORDER BY km2 DESC LIMIT 10
 ```
-(Coordinates are lat/lon, so areas are in degrees — suitable for relative comparison
-and maps. Check column names with `uvx queria columns nlftp`.)
+
+Distance between two stations in metres:
+```sql
+WITH t AS (SELECT geometry AS g FROM nlftp.railway.station
+           WHERE station_name = '東京' AND operator = '東日本旅客鉄道'
+           ORDER BY station_code LIMIT 1),
+     s AS (SELECT geometry AS g FROM nlftp.railway.station
+           WHERE station_name = '新宿' AND operator = '東日本旅客鉄道'
+           ORDER BY station_code LIMIT 1)
+SELECT ST_Distance_Spheroid(ST_FlipCoordinates(t.g)::POINT_2D,
+                            ST_FlipCoordinates(s.g)::POINT_2D) AS metres
+FROM t, s
+```
+(A station name matches one row per line served, so pick a row deterministically —
+without the `ORDER BY` the distance changes between runs. Check column names with
+`uvx queria columns nlftp`.)
 
 ## Real estate
 
