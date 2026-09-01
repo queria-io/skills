@@ -96,9 +96,9 @@ GROUP BY 1 ORDER BY subsidies DESC
 ## Statistics: e-Stat SSDS (System of Social and Demographic Statistics)
 
 SSDS tables are long-format (`item_name`, `area_name`, `year`, `value`) and unique on
-(`cat01`, `area`, `year`), so one indicator in one area and year is one row. Inside a
-table `item_name` maps 1:1 to `cat01`, so filtering by `item_name` needs no deduping.
-Spellings of `item_name` differ between tables, so filter by `cat01` to span tables.
+(`cat01`, `area`, `year`), so one indicator in one area and year is one row. `item_name`
+embeds the `cat01` code (`A1101_総人口`) and the two are 1:1, so either column filters
+the same rows and neither needs deduping.
 
 Find available indicator names (総人口 = total population):
 ```sql
