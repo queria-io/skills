@@ -10,6 +10,16 @@ Explore postal codes, NTA corporate numbers, gBizINFO, e-Stat government statist
 
 Works with agents that support the Agent Skills standard (Claude Code, OpenAI Codex, Cursor, OpenCode, and others).
 
+### Queria CLI
+
+Install with the [queria CLI](https://docs.queria.io/en), whichever agent you use:
+
+```
+uvx queria skills install
+```
+
+The files go into the project you are in: `.agents/skills/`, which Codex, Cursor, OpenCode and others read, plus `.claude/skills/` wherever Claude Code is set up. Add `--global` to install them for every project on this machine. See the [CLI reference](https://docs.queria.io/en/reference/cli#queria-skills) for the options.
+
 ### Claude Code
 
 Install from the [plugin marketplace](https://code.claude.com/docs/en/discover-plugins):
@@ -45,7 +55,7 @@ You can also clone this repository and copy the skill folder into your agent's s
 | Claude Code | `~/.claude/skills/` | [docs](https://code.claude.com/docs/en/skills) |
 | Cursor | `~/.cursor/skills/` | [docs](https://cursor.com/docs/context/skills) |
 | OpenCode | `~/.config/opencode/skills/` | [docs](https://opencode.ai/docs/skills/) |
-| OpenAI Codex | `~/.codex/skills/` | [docs](https://developers.openai.com/codex/skills/) |
+| OpenAI Codex | `~/.agents/skills/` | [docs](https://developers.openai.com/codex/skills/) |
 | Pi | `~/.pi/agent/skills/` | [docs](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent#skills) |
 
 ## Skills
@@ -62,15 +72,15 @@ When exploration turns up a missing dataset, a data defect, or a documentation e
 
 Visualization, statistical analysis, and dashboards are out of scope. Export results to CSV/Parquet and hand them to visualization/analysis skills or BI tools.
 
-If you publish data rather than consume it, the two publishing skills cover the whole path from `queria create` to a dataset someone else can read. The reference is at [docs.queria.io/publish](https://docs.queria.io/publish).
+If you publish data rather than consume it, the two publishing skills cover the whole path from `queria create` to a dataset someone else can read. The reference is at [docs.queria.io/en/publish](https://docs.queria.io/en/publish).
 
 ## Requirements
 
-Uses the [queria CLI](https://docs.queria.io/) (PyPI: `queria`). With uv, `uvx queria` needs no install; otherwise `pip install queria` (Python 3.10+). No authentication required (anonymous access is [rate-limited](https://docs.queria.io/connection/authentication)).
+Uses the [queria CLI](https://docs.queria.io/en) (PyPI: `queria`). With uv, `uvx queria` needs no install; otherwise `pip install queria` (Python 3.10+). No authentication required (anonymous access is [rate-limited](https://docs.queria.io/en/authentication)).
 
 ## Environments without a shell (MCP)
 
-From MCP clients where the agent has no shell (e.g. Claude Desktop), use the [MCP server](https://docs.queria.io/mcp) (`uvx --from 'queria[mcp]' queria mcp`) instead of the skill.
+From MCP clients where the agent has no shell (e.g. Claude Desktop), use the [MCP server](https://docs.queria.io/en/mcp) (`uvx --from 'queria[mcp]' queria mcp`) instead of the skill.
 
 ## How it works
 
