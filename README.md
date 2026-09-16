@@ -12,7 +12,7 @@ Works with agents that support the Agent Skills standard (Claude Code, OpenAI Co
 
 ### Queria CLI
 
-Install with the [queria CLI](https://docs.queria.io/), whichever agent you use:
+Install with the [queria CLI](https://docs.queria.io/en), whichever agent you use:
 
 ```
 uvx queria skills install
@@ -72,15 +72,15 @@ When exploration turns up a missing dataset, a data defect, or a documentation e
 
 Visualization, statistical analysis, and dashboards are out of scope. Export results to CSV/Parquet and hand them to visualization/analysis skills or BI tools.
 
-If you publish data rather than consume it, the two publishing skills cover the whole path from `queria create` to a dataset someone else can read. The reference is at [docs.queria.io/publish](https://docs.queria.io/publish).
+If you publish data rather than consume it, the two publishing skills cover the whole path from `queria create` to a dataset someone else can read. The reference is at [docs.queria.io/en/publish](https://docs.queria.io/en/publish).
 
 ## Requirements
 
-Uses the [queria CLI](https://docs.queria.io/) (PyPI: `queria`). With uv, `uvx queria` needs no install; otherwise `pip install queria` (Python 3.10+). No authentication required (anonymous access is [rate-limited](https://docs.queria.io/connection/authentication)).
+Uses the [queria CLI](https://docs.queria.io/en) (PyPI: `queria`). With uv, `uvx queria` needs no install; otherwise `pip install queria` (Python 3.10+). No authentication required (anonymous access is [rate-limited](https://docs.queria.io/en/authentication)).
 
 ## Environments without a shell (MCP)
 
-From MCP clients where the agent has no shell (e.g. Claude Desktop), use the [MCP server](https://docs.queria.io/mcp) (`uvx --from 'queria[mcp]' queria mcp`) instead of the skill.
+From MCP clients where the agent has no shell (e.g. Claude Desktop), use the [MCP server](https://docs.queria.io/en/mcp) (`uvx --from 'queria[mcp]' queria mcp`) instead of the skill.
 
 ## How it works
 
