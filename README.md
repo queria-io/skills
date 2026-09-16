@@ -10,6 +10,16 @@ Explore postal codes, NTA corporate numbers, gBizINFO, e-Stat government statist
 
 Works with agents that support the Agent Skills standard (Claude Code, OpenAI Codex, Cursor, OpenCode, and others).
 
+### Queria CLI
+
+Install with the [queria CLI](https://docs.queria.io/), whichever agent you use:
+
+```
+uvx queria skills install
+```
+
+The files go into the project you are in: `.agents/skills/`, which Codex, Cursor, OpenCode and others read, plus `.claude/skills/` wherever Claude Code is set up. Add `--global` to install them for every project on this machine. See the [CLI reference](https://docs.queria.io/en/reference/cli#queria-skills) for the options.
+
 ### Claude Code
 
 Install from the [plugin marketplace](https://code.claude.com/docs/en/discover-plugins):
@@ -45,7 +55,7 @@ You can also clone this repository and copy the skill folder into your agent's s
 | Claude Code | `~/.claude/skills/` | [docs](https://code.claude.com/docs/en/skills) |
 | Cursor | `~/.cursor/skills/` | [docs](https://cursor.com/docs/context/skills) |
 | OpenCode | `~/.config/opencode/skills/` | [docs](https://opencode.ai/docs/skills/) |
-| OpenAI Codex | `~/.codex/skills/` | [docs](https://developers.openai.com/codex/skills/) |
+| OpenAI Codex | `~/.agents/skills/` | [docs](https://developers.openai.com/codex/skills/) |
 | Pi | `~/.pi/agent/skills/` | [docs](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent#skills) |
 
 ## Skills

@@ -10,6 +10,16 @@ Queria が公開する日本のオープンデータ（[data.queria.io](https://
 
 Agent Skills 標準に対応したエージェント（Claude Code、OpenAI Codex、Cursor、OpenCode など）で利用できる。
 
+### Queria CLI
+
+エージェントを問わず、[queria CLI](https://docs.queria.io/) からインストールする:
+
+```
+uvx queria skills install
+```
+
+書き込み先はいまのプロジェクト。Codex・Cursor・OpenCode などが読む `.agents/skills/` に書き、Claude Code が設定されている環境では `.claude/skills/` にも書く。このマシンの全プロジェクトで使うなら `--global` を付ける。オプションは [CLI リファレンス](https://docs.queria.io/reference/cli#queria-skills)を参照。
+
 ### Claude Code
 
 [プラグインマーケットプレイス](https://code.claude.com/docs/en/discover-plugins)からインストールする:
@@ -45,7 +55,7 @@ npx skills add queria-io/skills
 | Claude Code | `~/.claude/skills/` | [docs](https://code.claude.com/docs/en/skills) |
 | Cursor | `~/.cursor/skills/` | [docs](https://cursor.com/docs/context/skills) |
 | OpenCode | `~/.config/opencode/skills/` | [docs](https://opencode.ai/docs/skills/) |
-| OpenAI Codex | `~/.codex/skills/` | [docs](https://developers.openai.com/codex/skills/) |
+| OpenAI Codex | `~/.agents/skills/` | [docs](https://developers.openai.com/codex/skills/) |
 | Pi | `~/.pi/agent/skills/` | [docs](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent#skills) |
 
 ## Skills
