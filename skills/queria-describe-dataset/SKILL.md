@@ -1,6 +1,6 @@
 ---
 name: queria-describe-dataset
-description: Decide which layer of a Queria dataset each thing you know belongs to — a column's description, a table's description or ai_context, or the dataset's ai_context — and write keywords, synonyms and examples that do not overlap. Use when writing or fixing dataset.yml / *.table.yml descriptions, ai_context, keywords or synonyms (説明・メタデータの書き方), or when a dataset's caveats have piled up in one place. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
+description: Decide which layer of a Queria dataset each thing you know belongs to — a column's description, a table's description or ai_context, or the dataset's ai_context — write keywords, synonyms and examples that do not overlap, and name columns and their titles after the government vocabulary (GIF). Use when writing or fixing dataset.yml / *.table.yml descriptions, ai_context, keywords or synonyms (説明・メタデータの書き方), when naming columns or their Japanese titles (列名・英語名), or when a dataset's caveats have piled up in one place. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
 ---
 
 # Describing a Queria dataset
@@ -49,6 +49,29 @@ Push them down to the smallest layer where they hold.
 - "This column mixes totals with their breakdown" → that column's `description`
 - "This table's grain differs from the boundary data" → that table's `ai_context`
 - "These two schemas join at different grains" → the dataset's `instructions`
+
+## Naming columns
+
+Column names and column `title`s follow the Digital Agency's Government
+Interoperability Framework (GIF). Two files in `queria-io/dataset-shared` decide it:
+
+- `vocab/columns.csv` — the crosswalk: Queria `column`, `title`, the GIF term, the IMI
+  term, the semantic `entity`, and `aliases` (old names and synonyms not to use)
+- `vocab/gif_core.csv` — every GIF core data model term, Japanese and English names
+
+Fetch them from `https://raw.githubusercontent.com/queria-io/dataset-shared/main/vocab/`.
+
+1. The concept is in `columns.csv` → use its `column`, `title` and `entity`
+2. Not there → find the term in `gif_core.csv`; the column is its `term_en` in snake_case
+   (`nameKana` → `name_kana`), the `title` is its `term_ja`
+3. Not in GIF either → name it yourself
+
+A name listed in `aliases` is never used for a new column. When an existing dataset uses
+one, add the new column beside it, mark the old one deprecated in its `description`, and
+drop it later — do not rename in place.
+
+Column names change; `semantic` entity names do not. Cross-dataset joins follow the
+entity name, so renaming a column does not break them.
 
 ## keywords vs synonyms
 
@@ -109,6 +132,7 @@ See `references/splitting-a-dataset.md` for a worked before/after on a real data
 - Is the same thing written in two places?
 - Do `keywords` and `synonyms` share a word?
 - Did any SQL end up in `examples`?
+- Is any column name listed in `aliases` in `vocab/columns.csv`?
 - Does `uvx queria validate` still pass?
 
 Full reference: https://docs.queria.io/publish/writing-descriptions — if this skill and
