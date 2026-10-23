@@ -65,6 +65,7 @@ schema: calendar
 name: day
 title: Japanese calendar
 published: true
+primary_key: date
 fields:
   - name: date
     title: Date
@@ -72,6 +73,10 @@ fields:
 
 **Never write column types.** Types, column order and nullability are read from the data,
 so they cannot drift from it. Writing them is rejected.
+
+**Declare `primary_key`** with the column, or list of columns, that identifies one row.
+`queria compile` reads the data and rejects repeated or NULL key values, so a failure there
+means either the data has duplicates or the declared grain is wrong.
 
 Tables sharing a column layout go in one file, with YAML anchors carrying the shared part:
 
