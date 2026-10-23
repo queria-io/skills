@@ -60,13 +60,15 @@ Column names follow a vocabulary chosen by the kind of data:
   (`latitudeOfRepresentativePoint`), use the schema.org one (`latitude`)
 - `title` → the GIF Japanese name either way
 
-`queria-io/dataset-shared` holds the concept table that ties names together. Fetch it from
-`https://raw.githubusercontent.com/queria-io/dataset-shared/main/vocab/concepts.csv`. Each
-row is one concept: `concept` (the name for Japanese public data), `title`, `schema_org`,
-`gif_term`, `imi_term`, the semantic `entity`, and `aliases` (other names in use for it).
+`queria-io/vocabulary` holds the vocabularies that tie names together. Fetch them from
+`https://raw.githubusercontent.com/queria-io/vocabulary/main/data_elements.csv` and
+`.../entities.csv`. Each row of `data_elements.csv` is one data element (what a column
+represents): `name` (the name for Japanese public data), `title`, `schema_org`, `gif_term`,
+`imi_term`, the `entity` it identifies, and `aliases` (other names in use for it).
+`entities.csv` lists the names allowed in `semantic: { role: entity, name: ... }`.
 
-1. The concept is in `concepts.csv` → use `concept` for Japanese public data, or `schema_org`
-   in snake_case for general data (falling back to `concept`), plus its `title` and `entity`
+1. The element is in `data_elements.csv` → use `name` for Japanese public data, or `schema_org`
+   in snake_case for general data (falling back to `name`), plus its `title` and `entity`
 2. Not there → find the term in your vocabulary and use it in snake_case
    (`nameKana` → `name_kana`)
 3. In no vocabulary → name it yourself
@@ -137,7 +139,7 @@ See `references/splitting-a-dataset.md` for a worked before/after on a real data
 - Is the same thing written in two places?
 - Do `keywords` and `synonyms` share a word?
 - Did any SQL end up in `examples`?
-- Is any new column an abbreviation listed in `aliases` in `vocab/concepts.csv`?
+- Is any new column an abbreviation listed in `aliases` in `data_elements.csv`?
 - Does `uvx queria validate` still pass?
 
 Full reference: https://docs.queria.io/publish/writing-descriptions — if this skill and
