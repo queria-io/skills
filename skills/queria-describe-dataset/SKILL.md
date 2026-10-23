@@ -1,6 +1,6 @@
 ---
 name: queria-describe-dataset
-description: Decide which layer of a Queria dataset each thing you know belongs to — a column's description, a table's description or ai_context, or the dataset's ai_context — and write keywords, synonyms and examples that do not overlap. Use when writing or fixing dataset.yml / *.table.yml descriptions, ai_context, keywords or synonyms (説明・メタデータの書き方), or when a dataset's caveats have piled up in one place. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
+description: Decide which layer of a Queria dataset each thing you know belongs to — a column's description, a table's description or ai_context, or the dataset's ai_context — write keywords, synonyms and examples that do not overlap, and name columns after schema.org or, for Japanese public data, the government vocabulary (GIF). Use when writing or fixing dataset.yml / *.table.yml descriptions, ai_context, keywords or synonyms (説明・メタデータの書き方), when naming columns or their Japanese titles (列名・英語名), or when a dataset's caveats have piled up in one place. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
 ---
 
 # Describing a Queria dataset
@@ -49,6 +49,34 @@ Push them down to the smallest layer where they hold.
 - "This column mixes totals with their breakdown" → that column's `description`
 - "This table's grain differs from the boundary data" → that table's `ai_context`
 - "These two schemas join at different grains" → the dataset's `instructions`
+
+## Naming columns
+
+Column names follow a vocabulary chosen by the kind of data:
+
+- General data (maps, places, data from outside Japan) → schema.org terms in snake_case
+- Japanese public-sector data (municipal and national statistics, registers) → GIF English
+  names in snake_case; when a GIF term only adds a qualifier to a schema.org term
+  (`latitudeOfRepresentativePoint`), use the schema.org one (`latitude`)
+- `title` → the GIF Japanese name either way
+
+`queria-io/dataset-shared` holds the concept table that ties names together. Fetch it from
+`https://raw.githubusercontent.com/queria-io/dataset-shared/main/vocab/concepts.csv`. Each
+row is one concept: `concept` (the name for Japanese public data), `title`, `schema_org`,
+`gif_term`, `imi_term`, the semantic `entity`, and `aliases` (other names in use for it).
+
+1. The concept is in `concepts.csv` → use `concept` for Japanese public data, or `schema_org`
+   in snake_case for general data (falling back to `concept`), plus its `title` and `entity`
+2. Not there → find the term in your vocabulary and use it in snake_case
+   (`nameKana` → `name_kana`)
+3. In no vocabulary → name it yourself
+
+Do not rename existing columns just to match. Abbreviations such as `lat` or `pref_code`
+are the exception: add the new column beside the old one, mark the old one deprecated in
+its `description`, and drop it later — never rename in place.
+
+Column names differ; `semantic` entity names do not. Cross-dataset joins follow the entity
+name, so the name of the column does not matter to them.
 
 ## keywords vs synonyms
 
@@ -109,6 +137,7 @@ See `references/splitting-a-dataset.md` for a worked before/after on a real data
 - Is the same thing written in two places?
 - Do `keywords` and `synonyms` share a word?
 - Did any SQL end up in `examples`?
+- Is any new column an abbreviation listed in `aliases` in `vocab/concepts.csv`?
 - Does `uvx queria validate` still pass?
 
 Full reference: https://docs.queria.io/publish/writing-descriptions — if this skill and
