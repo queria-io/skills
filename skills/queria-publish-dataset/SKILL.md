@@ -60,15 +60,14 @@ contributors:
 ```
 
 ```yaml
-# models/main/mart_calendar.table.yml
-schema: main
-name: mart_calendar
+# models/calendar/day.table.yml
+schema: calendar
+name: day
 title: Japanese calendar
 published: true
 fields:
   - name: date
     title: Date
-    semantic: { role: entity, name: date }
 ```
 
 **Never write column types.** Types, column order and nullability are read from the data,
@@ -78,7 +77,7 @@ Tables sharing a column layout go in one file, with YAML anchors carrying the sh
 
 ```yaml
 _fields: &fields
-  - { name: area, title: Area code }
+  - { name: local_government_code, title: Local government code, semantic: { role: entity, name: city } }
   - { name: value, title: Value, semantic: { role: measure, agg: sum } }
 tables:
   - { schema: ssds, name: a_population, title: Population, fields: *fields }
