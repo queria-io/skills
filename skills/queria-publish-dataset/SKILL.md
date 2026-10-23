@@ -76,7 +76,7 @@ so they cannot drift from it. Writing them is rejected.
 
 **Declare `primary_key`** with the column, or list of columns, that identifies one row.
 `queria compile` reads the data and rejects repeated or NULL key values, so a failure there
-means the grain is wrong, not the declaration.
+means either the data has duplicates or the declared grain is wrong.
 
 Tables sharing a column layout go in one file, with YAML anchors carrying the shared part:
 
