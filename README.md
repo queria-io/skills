@@ -65,6 +65,7 @@ You can also clone this repository and copy the skill folder into your agent's s
 | queria | Discovering Japanese open data, inspecting schemas, read-only SQL, cross-dataset joins, CSV/Parquet export, reporting gaps back to Queria |
 | queria-publish-dataset | Publishing a dataset of your own: registering it, declaring it, building, pushing |
 | queria-describe-dataset | Deciding which layer each description, `ai_context` entry, keyword or synonym belongs to |
+| queria-write-page | Writing a page (article or dashboard) from SQL and charts, and publishing it with `queria page create` |
 
 The skill itself lives in [skills/queria/SKILL.md](skills/queria/SKILL.md); common queries are in [references/sql-recipes.md](skills/queria/references/sql-recipes.md), and how to report problems is in [references/feedback.md](skills/queria/references/feedback.md).
 
