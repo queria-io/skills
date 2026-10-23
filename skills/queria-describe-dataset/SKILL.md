@@ -58,7 +58,8 @@ Column names follow a vocabulary chosen by the kind of data:
 - Japanese public-sector data (municipal and national statistics, registers) → GIF English
   names in snake_case; when a GIF term only adds a qualifier to a schema.org term
   (`latitudeOfRepresentativePoint`), use the schema.org one (`latitude`)
-- `title` → the GIF Japanese name either way
+- `title` → the GIF Japanese name either way, the IMI term when GIF has none, the source's own
+  heading when neither does
 
 `queria-io/vocabulary` holds the vocabularies that tie names together. Fetch them from
 `https://raw.githubusercontent.com/queria-io/vocabulary/main/data_elements.csv` and
@@ -142,7 +143,8 @@ See `references/splitting-a-dataset.md` for a worked before/after on a real data
 - Is any new column an abbreviation listed in `aliases` in `data_elements.csv`?
 - Does `uvx queria validate` still pass?
 
-Full reference: https://docs.queria.io/publish/writing-descriptions — if this skill and
-that page disagree, the page is right.
+Full reference: https://docs.queria.io/publish/writing-descriptions (layers) and
+https://docs.queria.io/publish/conventions (names, types, grain, keys) — if this skill and
+those pages disagree, the pages are right.
 
 Done. Next: publish the change with `queria-publish-dataset`.
