@@ -150,7 +150,9 @@ layers:
 - `lng` / `lat` / `zoom` on the block are optional; leave them out to fit the data.
 - The map is stored like a chart, so it shows the saved result and can be the page's first
   chart. `sql id=` names must not start with `__`.
-- A trade-area map (`type: around`) takes the same `layers` to overlay your rows on it.
+- To count around a point on the same map, add `around:` with `lng`, `lat` and `radius`
+  (the trade-area fields above). The map is then framed on the point, so don't set
+  `lng` / `lat` / `zoom` on the map itself. `type: around` is a shorthand for this.
 
 Keep the result sizes small — the reader's browser runs every query when the page opens.
 Aggregate in SQL rather than sending thousands of rows to a chart.
