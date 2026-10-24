@@ -88,7 +88,7 @@ queria.io refuses the page when:
 | ` ```sql caption="..."` | runs the query and shows the result as a table |
 | ` ```sql run=false` | shows SQL without running it |
 | ` ```plot caption="..."` | a Plotly chart; the JSON spec refers to data as `$<id>.<column>` |
-| ` ```gis` | a trade-area map around a point (see below) |
+| ` ```gis` | a map of your query results, or a trade-area map around a point (see below) |
 
 `plot` takes a Plotly spec as JSON (`data` and `layout`), not JavaScript. Every `$<id>` must
 be a `sql id=` in the page. Each SQL block is one `SELECT`.
@@ -122,6 +122,35 @@ caption: 日野駅から半径1km
   block too, or point the reader at the map instead.
 - The map computes in the reader's browser, so put at most three on a page. Put the
   overview first as a `plot`, then zoom into places with maps.
+
+### Maps of query results
+
+To put rows from a `sql id=` block on a map, use `type: map` rather than writing a
+`choroplethmap` by hand. Place each layer by an area code column or by longitude and
+latitude columns; the boundaries, colours, legend and the view that fits the data are built
+for you.
+
+```gis
+type: map
+caption: 市区町村別の人口
+layers:
+  - from: pop           # a sql id=
+    area: city          # prefecture / city / small_area
+    code: lg_code       # area code column: 2, 5 (or 6), or 9/11 digits
+    color: population   # numeric column to colour by (optional)
+    label: city_name    # shown on hover (optional)
+    name: 人口           # legend entry (optional)
+  - from: stations
+    lng: lon
+    lat: lat
+```
+
+- Use either `area` + `code` or `lng` + `lat` per layer. Later layers are drawn on top.
+- The boundary datasets do not go in `datasets`.
+- `lng` / `lat` / `zoom` on the block are optional; leave them out to fit the data.
+- The map is stored like a chart, so it shows the saved result and can be the page's first
+  chart. `sql id=` names must not start with `__`.
+- A trade-area map (`type: around`) takes the same `layers` to overlay your rows on it.
 
 Keep the result sizes small — the reader's browser runs every query when the page opens.
 Aggregate in SQL rather than sending thousands of rows to a chart.
