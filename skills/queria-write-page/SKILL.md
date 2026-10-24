@@ -1,6 +1,6 @@
 ---
 name: queria-write-page
-description: Write up findings from Queria data as a page on queria.io — Markdown with SQL, Plotly charts and trade-area maps that run in the reader's browser — and create, update or delete it with queria page or the MCP page tools. Covers the front matter, declaring datasets, sql/plot code blocks, visibility, and what queria.io refuses. Use when the user wants a report, article, dashboard-like write-up or ページ/記事/レポート from Queria data. Querying the data itself is the queria skill.
+description: Write up findings from Queria data as a page on queria.io — Markdown with SQL, Plotly charts and trade-area maps that run in the reader's browser — and create, update or delete it with queria page or the MCP page tools. Covers the front matter, declaring datasets, sql/plot/gis code blocks, visibility, and what queria.io refuses. Use when the user wants a report, article, dashboard-like write-up or ページ/記事/レポート from Queria data. Querying the data itself is the queria skill.
 ---
 
 # Writing a page on Queria
@@ -110,10 +110,17 @@ caption: 日野駅から半径1km
 
 - The body is YAML with only `type` (`around`), `lng` / `lat` (numbers, not strings),
   `radius` (whole metres, 100–3000) and an optional `caption`. Nothing goes on the fence line.
+- The point must be in Japan: `lng` 122–154, `lat` 20–46. Anything outside is refused.
+- `caption` must be a string. Quote it when YAML would read it as something else or it
+  contains `: ` (`caption: "2024"`, `caption: "駅前: 半径1km"`).
 - Circles only. Walking, cycling and driving ranges are not available in pages yet.
 - The map's own tables do not go in `datasets`; declare only what your `sql` blocks use.
-- Take the coordinates from the data with SQL rather than guessing them.
-- The map computes in the reader's browser, so up to about three per page. Put the
+- Take the coordinates from the data with SQL rather than guessing them, and write them to
+  about six decimal places.
+- The map's numbers are counted in the reader's browser each time and are not stored with
+  the page. Don't copy them into the text; if the text needs a number, show it with a `sql`
+  block too, or point the reader at the map instead.
+- The map computes in the reader's browser, so put at most three on a page. Put the
   overview first as a `plot`, then zoom into places with maps.
 
 Keep the result sizes small — the reader's browser runs every query when the page opens.
