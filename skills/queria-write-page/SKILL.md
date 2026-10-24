@@ -1,6 +1,6 @@
 ---
 name: queria-write-page
-description: Write up findings from Queria data as a page on queria.io — Markdown with SQL and Plotly charts that run in the reader's browser — and create, update or delete it with queria page or the MCP page tools. Covers the front matter, declaring datasets, sql/plot code blocks, visibility, and what queria.io refuses. Use when the user wants a report, article, dashboard-like write-up or ページ/記事/レポート from Queria data. Querying the data itself is the queria skill.
+description: Write up findings from Queria data as a page on queria.io — Markdown with SQL, Plotly charts and trade-area maps that run in the reader's browser — and create, update or delete it with queria page or the MCP page tools. Covers the front matter, declaring datasets, sql/plot code blocks, visibility, and what queria.io refuses. Use when the user wants a report, article, dashboard-like write-up or ページ/記事/レポート from Queria data. Querying the data itself is the queria skill.
 ---
 
 # Writing a page on Queria
@@ -8,7 +8,7 @@ description: Write up findings from Queria data as a page on queria.io — Markd
 A page is a Markdown document with SQL and chart code blocks, served at
 `https://queria.io/pages/<handle>/<slug>`. The SQL runs in the reader's browser against the
 datasets the page declares, so every number on the page can be checked by re-running it.
-It is the same format as Queria's showcase articles.
+It is the same format as Queria's showcase articles (`https://queria.io/pages/queria/<slug>`).
 
 Use the `queria` skill to explore the data and get the SQL right first. This skill is
 about turning that into a page.
@@ -88,9 +88,33 @@ queria.io refuses the page when:
 | ` ```sql caption="..."` | runs the query and shows the result as a table |
 | ` ```sql run=false` | shows SQL without running it |
 | ` ```plot caption="..."` | a Plotly chart; the JSON spec refers to data as `$<id>.<column>` |
+| ` ```gis` | a trade-area map around a point (see below) |
 
 `plot` takes a Plotly spec as JSON (`data` and `layout`), not JavaScript. Every `$<id>` must
 be a `sql id=` in the page. Each SQL block is one `SELECT`.
+
+### Trade-area maps
+
+When the page is about places (a station, a shopping street, facilities, candidate sites),
+add a map around a representative point. It shows the population, households and age mix
+inside the circle, plus land prices and facilities, and the reader can click to move the
+point and recount, open it in the trade-area tool, or open the SQL behind the numbers.
+
+```gis
+type: around
+lng: 139.393896
+lat: 35.679414
+radius: 1000
+caption: 日野駅から半径1km
+```
+
+- The body is YAML with only `type` (`around`), `lng` / `lat` (numbers, not strings),
+  `radius` (whole metres, 100–3000) and an optional `caption`. Nothing goes on the fence line.
+- Circles only. Walking, cycling and driving ranges are not available in pages yet.
+- The map's own tables do not go in `datasets`; declare only what your `sql` blocks use.
+- Take the coordinates from the data with SQL rather than guessing them.
+- The map computes in the reader's browser, so up to about three per page. Put the
+  overview first as a `plot`, then zoom into places with maps.
 
 Keep the result sizes small — the reader's browser runs every query when the page opens.
 Aggregate in SQL rather than sending thousands of rows to a chart.
