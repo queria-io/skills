@@ -148,8 +148,9 @@ layers:
 - Use either `area` + `code` or `lng` + `lat` per layer. Later layers are drawn on top.
 - The boundary datasets do not go in `datasets`.
 - `lng` / `lat` / `zoom` on the block are optional; leave them out to fit the data.
-- The map is stored like a chart, so it shows the saved result and can be the page's first
-  chart. `sql id=` names must not start with `__`.
+- The map's data is stored like a chart's, so it shows the saved result. The page's preview
+  image comes from the first `plot`, so still lead with a chart. `sql id=` names must not
+  start with `__`.
 - To count around a point on the same map, add `around:` with `lng`, `lat` and `radius`
   (the trade-area fields above). The map is then framed on the point, so don't set
   `lng` / `lat` / `zoom` on the map itself. `type: around` is a shorthand for this.
