@@ -26,6 +26,12 @@ Through the Queria MCP server:
 - `search`, `get_columns` to find and check tables. Check columns before writing SQL; the
   names below are starting points, not a schema.
 
+Tables below are written as they go in SQL: dataset, schema and table, as in
+`nlftp.railway.station_passenger` (dataset `nlftp`, schema `railway`, table
+`station_passenger`). `get_columns` takes the dataset and the table on their own —
+`get_columns(dataset="nlftp", table="station_passenger")`, not `railway.station_passenger`.
+The schema is part of the name; do not replace it with `main`.
+
 With a shell, `uvx queria sql "<query>"` does what `query` does.
 
 ## The method
@@ -36,16 +42,22 @@ With a shell, `uvx queria sql "<query>"` does what `query` does.
    families; a family moving needs children, schools and land prices. If the user's purpose is
    unclear, state your assumption and go on — ask at the end, not first.
 
-2. Build candidates from the data. Do not start from a list you remember. Take the
-   stations in the area by passengers, the places where shops cluster, and the places the
-   user named. Five to eight candidates is enough. Give each a point (lng, lat).
-   - Stations: `nlftp.railway.station_passenger` (passengers per day by year; one row per
-     line, the count is on one of them)
-   - Where shops cluster: `overturemaps.places.place` counted by `mesh3` (1km mesh) or by
-     distance, filtered by `local_government_code`
+2. Build candidates from the data, in this order, and list them before measuring. Do not
+   start from a list you remember.
+   1. Stations inside the area, by passengers in the latest year: take the top four.
+      `nlftp.railway.station_passenger` (passengers per day by year; one row per line, the
+      count is on one of them). Pick them by location inside the area, not by name.
+   2. Where shops cluster: count `overturemaps.places.place` by `mesh3` (1km mesh) within the
+      area and add the two meshes with the most places that are not already within the
+      radius of a chosen station. Use the centre of the mesh as the point.
+   3. Places the user named.
 
-3. Measure every candidate the same way — the same radius (500m–1km on foot, wider by
-   car) and the same year. One table, one row per candidate.
+   That gives five to eight candidates. Give each a name and a point (lng, lat).
+
+3. Measure every candidate the same way — the same radius and the same year. One table,
+   one row per candidate. The radius is 800m (about a 10-minute walk) when customers or
+   residents arrive on foot, and 3km when they come by car; use another only when the user
+   asks for it, and say which one you used.
    - Residents: `trade_area_sql` gives total population and households only. For the age
      mix, take its `small_areas` query (`key_code` and `share`, the part of each 町丁目 inside
      the circle) and join `e_stat.census.census_small_area_age` on `area = key_code`,
