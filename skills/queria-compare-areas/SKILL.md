@@ -56,7 +56,8 @@ With a shell, `uvx queria sql "<query>"` does what `query` does.
    3. Places the user named.
 
    That gives five to eight candidates. If the area has fewer than four stations, add
-   meshes until there are five. Give each a name and a point (lng, lat).
+   meshes until there are five. When customers come by car, take only the top two stations
+   and add meshes until there are five. Give each a name and a point (lng, lat).
 
 3. Measure every candidate the same way — the same radius and the same year. One table,
    one row per candidate. The radius is 800m (about a 10-minute walk) when customers or
