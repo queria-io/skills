@@ -43,21 +43,25 @@ With a shell, `uvx queria sql "<query>"` does what `query` does.
    unclear, state your assumption and go on — ask at the end, not first.
 
 2. Build candidates from the data, in this order, and list them before measuring. Do not
-   start from a list you remember.
-   1. Stations inside the area, by passengers in the latest year: take the top four.
-      `nlftp.railway.station_passenger` (passengers per day by year; one row per line, the
-      count is on one of them). Pick them by location inside the area, not by name.
-   2. Where shops cluster: count `overturemaps.places.place` by `mesh3` (1km mesh) within the
-      area and add the two meshes with the most places that are not already within the
-      radius of a chosen station. Use the centre of the mesh as the point.
+   start from a list you remember. A station or mesh within 800m of a candidate already
+   taken is the same place; skip it and take the next one.
+   1. Stations inside the area: `nlftp.railway.station_passenger` (passengers per day by
+      year), picked by location and summed by `station_group_code` (see Pitfalls). Rank
+      them by the latest year each one has a count — some have none in 2024 — and take
+      the top four. Use the centroid of the group's `geometry` as the point.
+   2. Where shops cluster: count `overturemaps.places.place` by `mesh3` (1km mesh) for the
+      places inside the area and add the two meshes with the most places. Use the centroid
+      of the mesh in `e_stat.boundary.mesh_1km` as the point (`mesh_code` is VARCHAR, so
+      cast `mesh3`).
    3. Places the user named.
 
-   That gives five to eight candidates. Give each a name and a point (lng, lat).
+   That gives five to eight candidates. If the area has fewer than four stations, add
+   meshes until there are five. Give each a name and a point (lng, lat).
 
 3. Measure every candidate the same way — the same radius and the same year. One table,
    one row per candidate. The radius is 800m (about a 10-minute walk) when customers or
    residents arrive on foot, and 3km when they come by car; use another only when the user
-   asks for it, and say which one you used.
+   asks for it, and say which one you used. `trade_area_sql` takes up to 3km.
    - Residents: `trade_area_sql` gives total population and households only. For the age
      mix, take its `small_areas` query (`key_code` and `share`, the part of each 町丁目 inside
      the circle) and join `e_stat.census.census_small_area_age` on `area = key_code`,
@@ -103,7 +107,9 @@ With a shell, `uvx queria sql "<query>"` does what `query` does.
   (`local_government_code`, lg_code). Convert through `lg_code` before joining. In 政令市,
   Overture's `local_government_code` is the city (横浜市 141003) while e_stat has only the wards
   (14101…), so the codes never match; count Overture places by distance or polygon instead.
-- Station passengers: lines sharing a station carry the count on one row only; sum by
-  `station_group_code` or take the non-NULL row. Never pick stations by name alone — names
-  repeat across Japan (万博記念公園 is in Ibaraki and in Osaka). Narrow by location first.
+- Station passengers: there is one row per line, and each operator carries its count on one
+  of its lines (新宿 has four counts: JR, 京王, 小田急, 東京メトロ); the other rows are NULL.
+  Sum by `station_group_code`; taking one non-NULL row drops the other operators. Never
+  pick stations by name alone — names repeat across Japan (万博記念公園 is in Ibaraki and in
+  Osaka). Narrow by location first.
 - Do not present a count of zero competitors as "no competition"; it may be a gap in coverage.
