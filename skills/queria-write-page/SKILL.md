@@ -113,7 +113,9 @@ caption: 日野駅から半径1km
 - The point must be in Japan: `lng` 122–154, `lat` 20–46. Anything outside is refused.
 - `caption` must be a string. Quote it when YAML would read it as something else or it
   contains `: ` (`caption: "2024"`, `caption: "駅前: 半径1km"`).
-- Circles only. Walking, cycling and driving ranges are not available in pages yet.
+- For a range by road instead of a circle, write one of `walk` (5, 10, 15 or 20 minutes),
+  `bike` (5, 10 or 15) or `car` (10, 15, 20 or 30), e.g. `walk: 10`. Only one range per map.
+  Ranges by road need the Pro plan; saving fails on the free plan, so use `radius` there.
 - The map's own tables do not go in `datasets`; declare only what your `sql` blocks use.
 - Take the coordinates from the data with SQL rather than guessing them, and write them to
   about six decimal places.
