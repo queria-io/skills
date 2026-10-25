@@ -66,6 +66,7 @@ npx skills add queria-io/skills
 | queria-publish-dataset | 自分のデータセットの公開: 登録・宣言・ビルド・push |
 | queria-describe-dataset | 説明・`ai_context`・キーワード・別名を、どの階層に書くかの判断と、schema.org と GIF の語彙に沿った列名の付け方 |
 | queria-write-page | SQL とグラフでページ（記事・ダッシュボード）を書き、`queria page create` で公開する |
+| queria-compare-areas | 出店・住まい選びなど場所の判断を、人口・昼間人口・駅・競合・地価で候補地を比べて答える |
 
 スキルの本体は [skills/queria/SKILL.md](skills/queria/SKILL.md)、定番クエリは [references/sql-recipes.md](skills/queria/references/sql-recipes.md)、問題の報告手順は [references/feedback.md](skills/queria/references/feedback.md) を参照。
 
