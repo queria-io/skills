@@ -97,7 +97,7 @@ be a `sql id=` in the page. Each SQL block is one `SELECT`.
 
 When the page is about places (a station, a shopping street, facilities, candidate sites),
 add a map around a representative point. It shows the population, households and age mix
-inside the circle, plus land prices and facilities, and the reader can click to move the
+inside the range, plus land prices and facilities, and the reader can click to move the
 point and recount, open it in the trade-area tool, or open the SQL behind the numbers.
 
 ```gis
@@ -108,12 +108,20 @@ radius: 1000
 caption: 日野駅から半径1km
 ```
 
-- The body is YAML with only `type` (`around`), `lng` / `lat` (numbers, not strings),
-  `radius` (whole metres, 100–3000) and an optional `caption`. Nothing goes on the fence line.
+- The body is YAML with `type` (`around`), `lng` / `lat` (numbers, not strings), the range
+  (below), and optional `show` and `caption`. Nothing goes on the fence line.
+- The range is `radius` in whole metres, 100–3000.
 - The point must be in Japan: `lng` 122–154, `lat` 20–46. Anything outside is refused.
 - `caption` must be a string. Quote it when YAML would read it as something else or it
   contains `: ` (`caption: "2024"`, `caption: "駅前: 半径1km"`).
-- Circles only. Walking, cycling and driving ranges are not available in pages yet.
+- Instead of `radius`, measure by travel time: `walk` (5, 10, 15 or 20 minutes), `bike`
+  (5, 10 or 15) or `car` (10, 15, 20 or 30). Write one of `radius` / `walk` / `bike` / `car`.
+  Travel time is Pro: whether it is allowed is decided by the page owner's plan when the page is
+  saved. Anyone can read the saved result. Keep a `radius` alongside it (1000 when omitted) —
+  readers who move the point are counted with that circle.
+- `show` picks which sections to show: `age`, `households`, `housing`, `land_price`,
+  `facilities` (a list, or one string). Total population, households and the list of 町丁目 are
+  always shown. Choosing sections is also Pro.
 - The map's own tables do not go in `datasets`; declare only what your `sql` blocks use.
 - Take the coordinates from the data with SQL rather than guessing them, and write them to
   about six decimal places.
@@ -151,8 +159,8 @@ layers:
 - The map's data is stored like a chart's, so it shows the saved result. The page's preview
   image comes from the first `plot`, so still lead with a chart. `sql id=` names must not
   start with `__`.
-- To count around a point on the same map, add `around:` with `lng`, `lat` and `radius`
-  (the trade-area fields above). The map is then framed on the point, so don't set
+- To count around a point on the same map, add `around:` with `lng`, `lat` and a range
+  (`radius`, or `walk` / `bike` / `car`; the trade-area fields above). The map is then framed on the point, so don't set
   `lng` / `lat` / `zoom` on the map itself. `type: around` is a shorthand for this.
 
 Keep the result sizes small — the reader's browser runs every query when the page opens.
