@@ -114,14 +114,15 @@ caption: 日野駅から半径1km
 - The point must be in Japan: `lng` 122–154, `lat` 20–46. Anything outside is refused.
 - `caption` must be a string. Quote it when YAML would read it as something else or it
   contains `: ` (`caption: "2024"`, `caption: "駅前: 半径1km"`).
-- Instead of `radius`, measure by travel time: `walk` (5, 10, 15 or 20 minutes), `bike`
-  (5, 10 or 15) or `car` (10, 15, 20 or 30). Write one of `radius` / `walk` / `bike` / `car`.
-  Travel time is Pro: whether it is allowed is decided by the page owner's plan when the page is
-  saved. Anyone can read the saved result. Keep a `radius` alongside it (1000 when omitted) —
-  readers who move the point are counted with that circle.
+- To measure by travel time instead, write one of `walk` (5, 10, 15 or 20 minutes), `bike`
+  (5, 10 or 15) or `car` (10, 15, 20 or 30). Travel time needs a Pro or organisation owner:
+  it is checked against the page owner's plan when the page is saved, and anyone can read the
+  saved result. `radius` can be written alongside it (1000 when omitted); readers who cannot
+  count travel time themselves get that circle when they move the point, while Pro readers
+  get the travel-time range again.
 - `show` picks which sections to show: `age`, `households`, `housing`, `land_price`,
   `facilities` (a list, or one string). Total population, households and the list of 町丁目 are
-  always shown. Choosing sections is also Pro.
+  always shown. Choosing sections also needs a Pro or organisation owner.
 - The map's own tables do not go in `datasets`; declare only what your `sql` blocks use.
 - Take the coordinates from the data with SQL rather than guessing them, and write them to
   about six decimal places.
@@ -163,7 +164,8 @@ layers:
   (`radius`, or `walk` / `bike` / `car`; the trade-area fields above). The map is then framed on the point, so don't set
   `lng` / `lat` / `zoom` on the map itself. `type: around` is a shorthand for this.
 
-Keep the result sizes small — the reader's browser runs every query when the page opens.
+Keep the result sizes small — results are saved with the page and sent to every reader, and the
+reader's browser runs the queries itself when the saved result does not match.
 Aggregate in SQL rather than sending thousands of rows to a chart.
 
 ## Limits
