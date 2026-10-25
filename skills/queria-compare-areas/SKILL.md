@@ -30,13 +30,13 @@ With a shell, `uvx queria sql "<query>"` does what `query` does.
 
 ## The method
 
-1. **Say what the decision depends on.** Before any SQL, write two or three lines: who the
+1. Say what the decision depends on. Before any SQL, write two or three lines: who the
    customers or residents are, how they arrive (walk from a station, drive, live nearby), and
    which measures follow from that. A crepe shop needs foot traffic and young people or
    families; a family moving needs children, schools and land prices. If the user's purpose is
    unclear, state your assumption and go on — ask at the end, not first.
 
-2. **Build candidates from the data.** Do not start from a list you remember. Take the
+2. Build candidates from the data. Do not start from a list you remember. Take the
    stations in the area by passengers, the places where shops cluster, and the places the
    user named. Five to eight candidates is enough. Give each a point (lng, lat).
    - Stations: `nlftp.railway.station_passenger` (passengers per day by year; one row per
@@ -44,42 +44,53 @@ With a shell, `uvx queria sql "<query>"` does what `query` does.
    - Where shops cluster: `overturemaps.places.place` counted by `mesh3` (1km mesh) or by
      distance, filtered by `local_government_code`
 
-3. **Measure every candidate the same way** — the same radius (500m–1km on foot, wider by
+3. Measure every candidate the same way — the same radius (500m–1km on foot, wider by
    car) and the same year. One table, one row per candidate.
-   - Residents by age: `e_stat.census.census_small_area_age` joined to
-     `e_stat.boundary.small_area` (polygons) on `key_code = area`; or `trade_area_sql`
+   - Residents: `trade_area_sql` gives total population and households only. For the age
+     mix, take its `small_areas` query (`key_code` and `share`, the part of each 町丁目 inside
+     the circle) and join `e_stat.census.census_small_area_age` on `area = key_code`,
+     multiplying `value` by `share`. Without the share, a large 字 that only touches the
+     circle counts in full
    - Daytime population: `population_estimates.daytime.small_area` or
      `.daytime.mesh_1km` (estimates; see their descriptions)
    - Competitors and complements: `overturemaps.places.place` by `taxonomy_primary`
-     (`dessert_shop`, `cafe`, `bakery`…). `basic_category` is coarser — dessert shops sit under
-     `casual_eatery` there. Chains are also in `alltheplaces.places.place`
+     (`dessert_shop`, `cafe`, `coffee_shop`, `bakery`…). `basic_category` is coarser —
+     dessert shops sit under `casual_eatery` there. Chains are also in `alltheplaces.places.place`
    - Land prices: from `trade_area_sql`, or search 地価
    - Anything the purpose needs beyond these: `search` with `keys` (`small_area`, `mesh`,
      `city`) finds tables you can join on the same areas
 
-4. **Read the table and go one level deeper where it matters.** If two candidates are close,
+4. Read the table and go one level deeper where it matters. If two candidates are close,
    look at what separates them (age mix, daytime vs night, competitors per 1,000 people). If
    a number looks wrong, check it before using it.
 
-5. **Show the comparison and give a verdict.** Put the final table in front of the user with
+5. Show the comparison and give a verdict. Put the final table in front of the user with
    `show_sql` when the client can show it, then rank the candidates with one reason each.
    Name the trade-off of the top choice (e.g. most traffic but most competitors).
 
-6. **State the limits of the data** in a few lines: the census is 2020, daytime population is
-   an estimate, Overture misses small and new shops, coverage of a dataset is partial. Say
-   which way each limit pushes the numbers.
+6. State the limits of the data in a few lines: the census is 2020, daytime population is
+   an estimate built on 2016 employment figures, Overture misses small and new shops,
+   coverage of a dataset is partial. Say which way each limit pushes the numbers.
 
-7. **Offer the next step.** Compare the top two by walking time instead of a circle (a `gis`
-   block in a page), add land prices or rents, or write it up as a page (queria-write-page).
+7. Offer the next step. Compare the top two by walking time instead of a circle (a `gis`
+   block in a page, Pro plan only), add land prices or rents, or write it up as a page
+   (queria-write-page).
 
 ## Pitfalls
 
-- 国勢調査の小地域 tables (`census_small_area_*`) mix levels in `area`; filter by `area_level`
-  before summing. Sex and age are both in `cat01` / `age_class`; the column named `sex` is the
-  秘匿・合算 flag, not 男女. 秘匿 rows hold 0 — those people are counted in a neighbouring 合算 area,
-  so a 0 there does not mean nobody lives there.
+- 国勢調査の小地域 tables (`census_small_area_*`) mix levels in `area`: 5-digit municipalities,
+  9-digit 町丁・字等 and their 11-digit 丁目. Summing a table on its own, filter by `area_level`
+  first. Joined to `e_stat.boundary.small_area`, do not filter: the polygons are already one
+  layer of 9 and 11 digits without overlap, and keeping only `small_area` drops the 丁目-split
+  areas (about 64% of the population). Sex and age are both in `cat01` / `age_class`, and
+  `cat01` holds the 総数, 5-year bands and the 15歳未満 / 15〜64 / 65歳以上 groups side by side;
+  pick codes that do not overlap. The column named `sex` is the 秘匿・合算 flag, not 男女.
+  秘匿 rows hold 0 — those people are counted in a neighbouring 合算 area, so a 0 there does
+  not mean nobody lives there.
 - Area codes differ by table: 5-digit standard area codes (e_stat) vs 6-digit 全国地方公共団体コード
-  (`local_government_code`, lg_code). Convert through `lg_code` before joining.
+  (`local_government_code`, lg_code). Convert through `lg_code` before joining. In 政令市,
+  Overture's `local_government_code` is the city (横浜市 141003) while e_stat has only the wards
+  (14101…), so the codes never match; count Overture places by distance or polygon instead.
 - Station passengers: lines sharing a station carry the count on one row only; sum by
   `station_group_code` or take the non-NULL row. Never pick stations by name alone — names
   repeat across Japan (万博記念公園 is in Ibaraki and in Osaka). Narrow by location first.
