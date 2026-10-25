@@ -1,6 +1,6 @@
 ---
 name: queria-compare-areas
-description: Compare places in Japan with Queria data to answer a location decision — where to open a shop (出店・立地・商圏), which neighbourhood or town to live in or move to (住まい選び・移住), which station area or municipality suits a purpose (エリア比較・自治体比較). Use when the user asks どこがいい / どのあたり / どのエリア / どっちがいい about places in Japan, even if they do not mention data or Queria. Builds candidates from the data, measures each one the same way (population by age, daytime population, stations, competitors and complements, land prices) and states the limits of the data. General querying is the queria skill; writing the result up as a page is queria-write-page.
+description: Compare places in Japan with Queria data to answer a location decision — where to open a shop (出店・立地・商圏), which neighbourhood or town to live in or move to (住まい選び・移住), which station area or municipality suits a purpose (エリア比較・自治体比較). Use when the user is choosing where to put something or someone — a shop, an office, a home — and asks どこがいい / どのあたり / どのエリア / どっちがいい, even if they do not mention data or Queria. Not for sightseeing, travel or restaurant recommendations. Builds candidates from the data, measures each one the same way (population by age, daytime population, stations, competitors and complements, land prices) and states the limits of the data. General querying is the queria skill; writing the result up as a page is queria-write-page.
 ---
 
 # Comparing areas with Queria
