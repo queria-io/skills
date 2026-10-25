@@ -125,9 +125,9 @@ caption: 日野駅から半径1km
 - The map's own tables do not go in `datasets`; declare only what your `sql` blocks use.
 - Take the coordinates from the data with SQL rather than guessing them, and write them to
   about six decimal places.
-- The map's numbers are counted in the reader's browser each time and are not stored with
-  the page. Don't copy them into the text; if the text needs a number, show it with a `sql`
-  block too, or point the reader at the map instead.
+- The map's numbers are saved with the page like a chart's result, and recounted in the
+  reader's browser when they move the point. Don't copy them into the text; if the text needs
+  a number, show it with a `sql` block too, or point the reader at the map instead.
 - The map computes in the reader's browser, so put at most three on a page. Put the
   overview first as a `plot`, then zoom into places with maps.
 
