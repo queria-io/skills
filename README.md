@@ -66,6 +66,7 @@ You can also clone this repository and copy the skill folder into your agent's s
 | queria-publish-dataset | Publishing a dataset of your own: registering it, declaring it, building, pushing |
 | queria-describe-dataset | Deciding which layer each description, `ai_context` entry, keyword or synonym belongs to, and naming columns after schema.org and the GIF vocabulary |
 | queria-write-page | Writing a page (article or dashboard) from SQL and charts, and publishing it with `queria page create` |
+| queria-compare-areas | Comparing places in Japan for a location decision (where to open a shop, where to live) from population, daytime population, stations, competitors and land prices |
 
 The skill itself lives in [skills/queria/SKILL.md](skills/queria/SKILL.md); common queries are in [references/sql-recipes.md](skills/queria/references/sql-recipes.md), and how to report problems is in [references/feedback.md](skills/queria/references/feedback.md).
 
