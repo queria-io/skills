@@ -16,7 +16,7 @@ about turning that into a page.
 ## Before you start
 
 - `uvx queria login` — creating pages needs an account and a token that can write.
-- Or, through the MCP server: `create_page`, `update_page`, `get_page` (and `show_doc("pages")`).
+- Or, through the MCP server: `create_page`, `update_page`, `get_page` (and `read_doc("pages")`).
 
 ## The loop
 

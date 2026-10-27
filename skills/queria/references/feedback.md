@@ -45,20 +45,18 @@ command refuses to send, by design.
 The tool enforces the review step for you. Do not try to route around it.
 
 1. Call `submit_feedback` with `kind`, `message` and (if relevant) `dataset`.
-2. If it returns `status: "consent_required"`, the user has not allowed agent
-   submissions on this machine yet. Show them the draft and ask **one** question —
-   for example: *"Queria に要望として送っておきましょうか？ 毎回確認する / 確認なしで送る / 送らない"* —
-   then record their answer with `set_feedback_consent` (`review`, `auto`, or `off`).
-   Do not tell them to run a command; do not decide for them.
-3. If it returns `status: "needs_approval"`, show the `preview` **verbatim** and ask
-   whether to send it. Only if they agree, call `submit_feedback` again with the
-   `confirm_token`. If they decline, do nothing — no retry, no rephrasing.
-4. `status: "sent"` means it is stored. Say so once, briefly.
-5. `status: "rejected"` comes with a `reason` (usually a credential in the text or a
-   too-long message). Fix it and, if the user still agrees, try again.
+2. The first call always returns `status: "needs_approval"`. Show the `preview`
+   **verbatim** and ask whether to send it. Only if they agree, call `submit_feedback`
+   again with the same `kind`, `message` and `dataset` plus the `confirm_token`. If they
+   decline, do nothing — no retry, no rephrasing.
+3. `status: "sent"` means it is stored. Say so once, briefly.
+4. When it cannot send (usually a credential in the text or a too-long message), the
+   tool returns an error with the reason. Fix it and, if the user still agrees, try again.
 
-`confirm_token` is single-use and expires. A rejected token means starting over from
-step 1, not guessing another value.
+`confirm_token` is a signature over the draft and expires after an hour. Changing the
+text means starting over from step 1, not guessing another value.
+
+The tool is there only when the user has connected an account.
 
 ## Writing a report worth acting on
 
@@ -94,23 +92,3 @@ they have to say so in the message; ask before putting any contact detail in the
 The CLI refuses to send a message containing something that looks like an API token
 or a credential. Treat that refusal as a real finding, not an obstacle to work
 around: something leaked into the text that should not be there.
-
-## Permission model
-
-Stored per machine in the user's config file, and revocable at any time.
-
-| State | What you may do |
-|---|---|
-| not granted (default) | Nothing. Ask, then `set_feedback_consent` |
-| `review` | Send, but only after showing each message and getting agreement |
-| `auto` | Send without asking each time — only if the user chose this |
-
-Even in `auto`, do not send anything you would be uncomfortable showing the user.
-Reports sent this way are recorded as such, and the maintainers read them knowing
-no human checked them.
-
-This is separate from usage telemetry (`queria telemetry`). Telemetry is automatic
-and opt-out and carries no text a person wrote; feedback is neither. Turning
-telemetry off does not turn feedback on or off, and vice versa. If a user asks why
-their words would be sent anywhere, the answer is that nothing is sent until they
-say so: https://queria.io/legal/privacy-policy

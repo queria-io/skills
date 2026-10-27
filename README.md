@@ -82,7 +82,7 @@ Uses the [queria CLI](https://docs.queria.io/en) (PyPI: `queria`). With uv, `uvx
 
 ## Environments without a shell (MCP)
 
-From MCP clients where the agent has no shell (e.g. Claude Desktop), use the [MCP server](https://docs.queria.io/en/mcp) (`uvx --from 'queria[mcp]' queria mcp`) instead of the skill.
+From MCP clients where the agent has no shell (e.g. Claude Desktop), add the [MCP server](https://docs.queria.io/en/mcp) URL `https://queria.io/mcp` instead of the skill.
 
 ## How it works
 
