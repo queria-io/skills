@@ -16,11 +16,12 @@ only for what Queria cannot hold (rents, very recent openings, opening hours).
 Through the Queria MCP server:
 
 - `query` runs one SELECT on the server and returns the rows to you. Use it to read numbers
-  and decide the next SQL — this loop is where the analysis happens. Not every account has
-  it; if it is not in your tool list, use `show_sql` and ask the user what they see, or the
-  CLI.
-- `show_sql` runs SQL in the user's browser and shows a table, chart or map to them. You do
-  not see the result. Use it for the final comparison the user should look at, not to explore.
+  and decide the next SQL — this loop is where the analysis happens. It is there once the
+  user has signed in, and calls are counted (the free plan has 50 a week), so put related
+  checks into one SQL. If it is not in your tool list, or says the allowance is used up,
+  stop exploring and answer from what you have, or use the CLI.
+- `show_chart` shows a table, chart or map of a SQL result to the user. Use it for the final
+  comparison the user should look at, not to explore.
 - `trade_area_sql` builds the SQL for a circular trade area around a point (population and
   households prorated by 町丁目, land prices, shops in Tokyo).
 - `search`, `get_columns` to find and check tables. Check columns before writing SQL; the
@@ -82,7 +83,7 @@ With a shell, `uvx queria sql "<query>"` does what `query` does.
    a number looks wrong, check it before using it.
 
 5. Show the comparison and give a verdict. Put the final table in front of the user with
-   `show_sql` when the client can show it, then rank the candidates with one reason each.
+   `show_chart` when the client can show it, then rank the candidates with one reason each.
    Name the trade-off of the top choice (e.g. most traffic but most competitors).
 
 6. State the limits of the data in a few lines: the census is 2020, daytime population is

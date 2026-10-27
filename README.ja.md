@@ -80,7 +80,7 @@ npx skills add queria-io/skills
 
 ## シェルの無い環境（MCP）
 
-Claude Desktop など、エージェントがシェルを使えない MCP クライアントからはスキルの代わりに [MCP サーバー](https://docs.queria.io/mcp)（`uvx --from 'queria[mcp]' queria mcp`）を使う。
+Claude Desktop など、エージェントがシェルを使えない MCP クライアントからはスキルの代わりに [MCP サーバー](https://docs.queria.io/mcp)の URL `https://queria.io/mcp` を登録する。
 
 ## 仕組み
 

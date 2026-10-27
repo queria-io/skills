@@ -104,7 +104,7 @@ Two rules, and they are not negotiable:
 Send one consolidated report near the end of the session rather than several small
 ones, and do not nag — if the user is not interested, drop it.
 
-See `references/feedback.md` for the kinds, the MCP flow, and the permission model.
+See `references/feedback.md` for the kinds and the MCP flow.
 
 ## Visualization / analysis / dashboards (out of scope)
 
