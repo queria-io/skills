@@ -22,15 +22,17 @@ Through the Queria MCP server:
   stop exploring and answer from what you have, or use the CLI.
 - `show_chart` shows a table, chart or map of a SQL result to the user. Use it for the final
   comparison the user should look at, not to explore.
-- `trade_area_sql` builds the SQL for a circular trade area around a point (population and
-  households prorated by 町丁目, land prices, shops in Tokyo).
-- `search`, `get_columns` to find and check tables. Check columns before writing SQL; the
+- Trade area SQL functions, called inside the SQL of `query` or `show_chart`, each taking
+  `(lng, lat, radius_m)`: `trade_area_population` (total population and households),
+  `trade_area_small_areas` (each 町丁目 in the circle with its `share`), `trade_area_facilities`
+  and `trade_area_land_prices`. Their columns are in `read_doc('mcp')`.
+- `search_catalog`, `list_columns` to find and check tables. Check columns before writing SQL; the
   names below are starting points, not a schema.
 
 Tables below are written as they go in SQL: dataset, schema and table, as in
 `nlftp.railway.station_passenger` (dataset `nlftp`, schema `railway`, table
-`station_passenger`). `get_columns` takes the dataset and the table on their own —
-`get_columns(dataset="nlftp", table="station_passenger")`, not `railway.station_passenger`.
+`station_passenger`). `list_columns` takes the dataset and the table on their own —
+`list_columns(dataset="nlftp", table="station_passenger")`, not `railway.station_passenger`.
 The schema is part of the name; do not replace it with `main`.
 
 With a shell, `uvx queria sql "<query>"` does what `query` does.
@@ -63,10 +65,10 @@ With a shell, `uvx queria sql "<query>"` does what `query` does.
 3. Measure every candidate the same way — the same radius and the same year. One table,
    one row per candidate. The radius is 800m (about a 10-minute walk) when customers or
    residents arrive on foot, and 3km when they come by car; use another only when the user
-   asks for it, and say which one you used. `trade_area_sql` takes up to 3km.
-   - Residents: `trade_area_sql` gives total population and households only. For the age
-     mix, take its `small_areas` query (`key_code` and `share`, the part of each 町丁目 inside
-     the circle) and join `e_stat.census.census_small_area_age` on `area = key_code`,
+   asks for it, and say which one you used. The trade area functions take up to 3km.
+   - Residents: `trade_area_population` gives total population and households only. For the
+     age mix, take `trade_area_small_areas` (`key_code` and `share`, the part of each 町丁目
+     inside the circle) and join `e_stat.census.census_small_area_age` on `area = key_code`,
      multiplying `value` by `share`. Without the share, a large 字 that only touches the
      circle counts in full
    - Daytime population: `population_estimates.daytime.small_area` or
@@ -74,8 +76,8 @@ With a shell, `uvx queria sql "<query>"` does what `query` does.
    - Competitors and complements: `overturemaps.places.place` by `taxonomy_primary`
      (`dessert_shop`, `cafe`, `coffee_shop`, `bakery`…). `basic_category` is coarser —
      dessert shops sit under `casual_eatery` there. Chains are also in `alltheplaces.places.place`
-   - Land prices: from `trade_area_sql`, or search 地価
-   - Anything the purpose needs beyond these: `search` with `keys` (`small_area`, `mesh`,
+   - Land prices: `trade_area_land_prices`, or `search_catalog` for 地価
+   - Anything the purpose needs beyond these: `search_catalog` with `keys` (`small_area`, `mesh`,
      `city`) finds tables you can join on the same areas
 
 4. Read the table and go one level deeper where it matters. If two candidates are close,
