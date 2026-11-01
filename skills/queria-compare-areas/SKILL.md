@@ -13,7 +13,8 @@ only for what Queria cannot hold (rents, very recent openings, opening hours).
 
 ## Tools
 
-Through the Queria MCP server:
+The trade area functions below run only in the Queria MCP server, so this skill uses the
+MCP tools when they are there, even with a shell:
 
 - `query` runs one SELECT on the server and returns the rows to you. Use it to read numbers
   and decide the next SQL — this loop is where the analysis happens. It is there once the

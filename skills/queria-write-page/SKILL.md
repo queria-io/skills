@@ -15,16 +15,16 @@ about turning that into a page.
 
 ## Before you start
 
-Creating pages needs an account. Use the first route that is available:
+Creating pages needs an account. Use the first route that works:
 
+- A shell: `uvx queria login` (once; it opens a browser), then the `queria page` commands
+  below.
 - The Queria MCP tools: `create_page`, `update_page`, `get_page`, `list_pages`,
   `delete_page` (and `read_doc("pages")`). The sign-in of the connector is enough.
-- A shell: `uvx queria login`, then the `queria page` commands below.
 
 ## The loop
 
-With MCP: `create_page` with the Markdown (the result gives the URL), `get_page` to read
-it back, `update_page` to replace the Markdown or change the visibility. With the CLI:
+With the CLI:
 
 ```bash
 uvx queria page create report.md              # new page, private, URL printed
@@ -33,6 +33,9 @@ uvx queria page edit alice/report report.md   # replace the Markdown
 uvx queria page edit alice/report --public    # publish (only when the user asks)
 uvx queria page delete alice/report --yes
 ```
+
+With MCP: `create_page` with the Markdown (the result gives the URL), `get_page` to read
+it back, `update_page` to replace the Markdown or change the visibility.
 
 The slug defaults to the file name (`report/index.md` → `report`). `--owner <handle>`
 creates the page in an organisation the user belongs to. New pages are **private**.

@@ -87,7 +87,7 @@ npx skills add queria-io/skills
 - [MCP コネクタ](https://docs.queria.io/mcp) `https://queria.io/mcp`（プラグインに `.mcp.json` として入っている）。Queria の無料アカウントが要る。無料プランの query は週 50 回まで。地点の周りの集計（商圏の関数）はこちらでだけ使える
 - [queria CLI](https://docs.queria.io/)（PyPI: `queria`）。シェルを使えるエージェント向け。uv があれば `uvx queria` でインストール不要、なければ `pip install queria`（Python 3.10+）。認証は不要（匿名アクセスには[レートリミット](https://docs.queria.io/connection/authentication)がある）
 
-両方あるときは、スキルはコネクタを使う。
+両方あるときは、スキルは CLI を使う。地点の周りの集計だけはコネクタを使う。
 
 ## 送られるデータ
 

@@ -14,15 +14,20 @@ Search with Japanese keywords when possible; table and column names are in Engli
 
 ## Pick the route
 
-Use the first one that is available.
+Use the first one that works.
 
-1. **Queria MCP tools** (`search_catalog`, `query`, …) are in your tool list: use them. This
-   is the route in claude.ai, the Claude apps and Cowork, which have no shell.
-2. **A shell, no MCP tools** (Claude Code, Codex and other coding agents): run the queria
-   CLI with `uvx queria …` (or `pip install queria`). It needs no sign-in.
+1. **A shell** (Claude Code, Codex and other coding agents): run the queria CLI with
+   `uvx queria …` (or `pip install queria`). It needs no sign-in and does not use the MCP
+   allowance. If the command cannot run or cannot reach data.queria.io (a sandbox without
+   network, as in some chat apps), go to 2.
+2. **Queria MCP tools** (`search_catalog`, `query`, …) in your tool list: use them. This is
+   the route in claude.ai, the Claude apps and Cowork.
 3. **Neither**: tell the user to add the connector `https://queria.io/mcp`
    (https://docs.queria.io/ai-chat) and stop. Do not answer from memory or web articles
    when the question is about the numbers Queria holds.
+
+One exception to the order: the trade area functions below exist only in the MCP server.
+For numbers around a point, use `query` when the MCP tools are there, even with a shell.
 
 | Step | MCP tool | CLI |
 |---|---|---|
@@ -71,8 +76,8 @@ FROM s, LATERAL trade_area_population(s.lng, s.lat, 1000) p
 `trade_area_small_areas` to `e_stat.census.census_small_area_age` on `area = key_code` and
 multiply by `share` (the queria-compare-areas skill has the details).
 
-These functions exist only in the MCP server. With the CLI, say that the radius numbers
-need the connector or https://queria.io/gis, rather than rebuilding them by hand.
+These functions exist only in the MCP server. With only the CLI, say that the radius
+numbers need the connector or https://queria.io/gis, rather than rebuilding them by hand.
 
 ## Exploration workflow
 
@@ -85,7 +90,8 @@ need the connector or https://queria.io/gis, rather than rebuilding them by hand
 5. Retrieve and check the numbers
 6. Answer, then show the result the user asked for
 
-With MCP, `query` is counted (the free plan allows 50 a week), so put related checks into
+With the CLI, show the result as a table in your answer, or write it with `--out` for
+another tool. With MCP, `query` is counted (the free plan allows 50 a week), so put related checks into
 one SQL and learn tables from `list_tables` / `list_columns` rather than from `query`. If
 it says the allowance is used up, stop exploring and answer from what you have. Write the
 answer in full (verdict, reasons, limits of the data) and call `show_chart` once at the end

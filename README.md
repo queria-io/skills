@@ -89,7 +89,7 @@ Either of these:
 - The [MCP connector](https://docs.queria.io/en/mcp) `https://queria.io/mcp` (bundled in the plugin as `.mcp.json`). Needs a free Queria account; the free plan runs up to 50 queries a week. Counting around a point (trade area functions) works only here
 - The [queria CLI](https://docs.queria.io/en) (PyPI: `queria`), for agents with a shell. With uv, `uvx queria` needs no install; otherwise `pip install queria` (Python 3.10+). No authentication required (anonymous access is [rate-limited](https://docs.queria.io/en/authentication))
 
-When both are there, the skills use the connector.
+When both are there, the skills use the CLI, except for counting around a point, which needs the connector.
 
 ## Data
 
