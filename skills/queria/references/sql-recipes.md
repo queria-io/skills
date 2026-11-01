@@ -1,6 +1,7 @@
 # Queria SQL Recipes
 
-Run with `uvx queria sql "<query>"`.
+Run with the MCP `query` tool (list every dataset the SQL reads in `datasets`) or with
+`uvx queria sql "<query>"`. Each is one statement per call.
 Reference tables as `dataset.schema.table`. Referencing another dataset attaches it
 automatically, so you can join across datasets directly. Prefer `mart_`-prefixed tables
 for analysis-ready data.
@@ -13,8 +14,7 @@ with Japanese strings as shown below.
 Queries run on DuckDB. Most PostgreSQL habits carry over, but not all — `to_char`
 does not exist here, for example; use `strftime(d, '%Y-%m')`.
 
-Forms DuckDB has and PostgreSQL does not. Run them one at a time — `queria sql` takes
-a single statement per call.
+Forms DuckDB has and PostgreSQL does not. Run them one at a time.
 
 ```sql
 SELECT prefecture, count(*) AS c FROM lg_code.main.mart_lg_code GROUP BY ALL;
@@ -48,6 +48,8 @@ satisfies the syntax. On a source where a cell can hold several rows, choose the
 aggregate to match how that cell should collapse.
 
 ## Discovery and schema inspection
+
+With MCP: `search_catalog`, `get_dataset`, `list_tables`, `list_columns`. With the CLI:
 
 ```bash
 uvx queria list                     # list datasets
@@ -148,7 +150,7 @@ longitude), which means plain `ST_Area` and `ST_Distance` return degrees — usa
 relative comparison, meaningless as an area or a distance.
 
 Real-world units come from the `_Spheroid` functions, and those read latitude first.
-`queria sql` accepts read-only statements only, so `SET geometry_always_xy = true` is
+Queria accepts read-only statements only, so `SET geometry_always_xy = true` is
 not available; flip the axes per call with `ST_FlipCoordinates` instead. Skipping the
 flip yields `nan` rather than an error, and `nan` sorts to the top under
 `ORDER BY ... DESC`.
@@ -174,7 +176,7 @@ FROM t, s
 ```
 (A station name matches one row per line served, so pick a row deterministically —
 without the `ORDER BY` the distance changes between runs. Check column names with
-`uvx queria columns nlftp`.)
+`list_columns` / `uvx queria columns nlftp`.)
 
 ## Real estate
 
@@ -183,16 +185,15 @@ SELECT prefecture, COUNT(*) AS deals, AVG(trade_price) AS avg_price
 FROM reinfolib.main.mart_trade_prices
 GROUP BY 1 ORDER BY deals DESC
 ```
-(Check actual columns with `uvx queria columns reinfolib`.)
+(Check actual columns with `list_columns` / `uvx queria columns reinfolib`.)
 
-## Handing off to other skills (visualization / analysis / dashboards)
+## Showing or handing off the result
 
-This skill does not visualize. Write results out and pass them along:
+With MCP, show the final result with `show_chart` (`read_doc('charts')` for charts and
+maps). With the CLI, write it to a file and pass it to a charting or analysis skill:
 ```bash
 uvx queria sql "
   SELECT area_name, value FROM e_stat.ssds.a_pref_population
   WHERE item_name='A1101_総人口' AND year=2024 AND area_name<>'全国'
 " --out /tmp/pref_population.parquet
 ```
-Pass the written CSV/Parquet to data:create-viz (charts) / data:analyze (analysis) /
-data:build-dashboard or Tableau/PowerBI MCP (dashboards).

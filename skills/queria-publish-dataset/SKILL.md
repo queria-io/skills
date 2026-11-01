@@ -17,7 +17,9 @@ gets the dataset into the catalog and keeps it there.
 
 ## Before you start
 
-- The queria CLI (PyPI: `queria`). With uv no install is needed: `uvx queria`.
+- A shell with the queria CLI (PyPI: `queria`). With uv no install is needed: `uvx queria`.
+  The MCP connector cannot create or push datasets; in a chat without a shell, explain the
+  steps below and leave running them to the user.
 - `uvx queria login` — publishing needs an account; reading does not.
 - A build that produces data. Anything that writes into the attached catalog works.
 

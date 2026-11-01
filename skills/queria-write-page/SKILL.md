@@ -15,10 +15,16 @@ about turning that into a page.
 
 ## Before you start
 
-- `uvx queria login` — creating pages needs an account and a token that can write.
-- Or, through the MCP server: `create_page`, `update_page`, `get_page` (and `read_doc("pages")`).
+Creating pages needs an account. Use the first route that works:
+
+- A shell: `uvx queria login` (once; it opens a browser), then the `queria page` commands
+  below.
+- The Queria MCP tools: `create_page`, `update_page`, `get_page`, `list_pages`,
+  `delete_page` (and `read_doc("pages")`). The sign-in of the connector is enough.
 
 ## The loop
+
+With the CLI:
 
 ```bash
 uvx queria page create report.md              # new page, private, URL printed
@@ -28,8 +34,13 @@ uvx queria page edit alice/report --public    # publish (only when the user asks
 uvx queria page delete alice/report --yes
 ```
 
-The slug defaults to the file name (`report/index.md` → `report`). `--owner <handle>`
-creates the page in an organisation the user belongs to. New pages are **private**.
+With MCP: `create_page` with the Markdown and a `slug` (required; the result gives the
+URL), `get_page` to read it back, `update_page` to replace the Markdown or change the
+visibility.
+
+With the CLI the slug defaults to the file name (`report/index.md` → `report`).
+`--owner <handle>` (`owner` in `create_page`) creates the page in an organisation the user
+belongs to. New pages are **private**.
 **Never make a page public unless the user asked for it** — public pages are visible to
 anyone and indexed by search engines. `--members` shows it to the owning account's members.
 
@@ -176,4 +187,4 @@ Aggregate in SQL rather than sending thousands of rows to a chart.
 - The slug is lowercase letters, digits and hyphens, and cannot be changed after creation.
 
 When queria.io refuses a page, the error says which rule it broke. Fix the Markdown and
-run `queria page edit` (or `create` if the first create failed) again.
+call `update_page` / `queria page edit` (or create again if the first create failed).
