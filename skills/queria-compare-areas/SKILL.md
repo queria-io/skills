@@ -18,8 +18,8 @@ Through the Queria MCP server:
 - `query` runs one SELECT on the server and returns the rows to you. Use it to read numbers
   and decide the next SQL — this loop is where the analysis happens. It is there once the
   user has signed in, and calls are counted (the free plan has 50 a week), so put related
-  checks into one SQL. If it is not in your tool list, or says the allowance is used up,
-  stop exploring and answer from what you have, or use the CLI.
+  checks into one SQL. If it says the allowance is used up, stop exploring and answer from
+  what you have.
 - `show_chart` shows a table, chart or map of a SQL result to the user. Use it for the final
   comparison the user should look at, not to explore.
 - Trade area SQL functions, called inside the SQL of `query` or `show_chart`, each taking
@@ -35,7 +35,11 @@ Tables below are written as they go in SQL: dataset, schema and table, as in
 `list_columns(dataset="nlftp", table="station_passenger")`, not `railway.station_passenger`.
 The schema is part of the name; do not replace it with `main`.
 
-With a shell, `uvx queria sql "<query>"` does what `query` does.
+Without the MCP tools, `uvx queria sql "<query>"` runs the same SQL from a shell, but the
+trade area functions are not there. Count the small areas whose centroid lies within the
+radius (`ST_Distance_Spheroid` on `ST_Centroid`, see the distance recipe in the queria
+skill's `references/sql-recipes.md`), say that the numbers are approximate, and suggest the
+connector (`https://queria.io/mcp`) for the exact ones.
 
 ## The method
 

@@ -15,10 +15,16 @@ about turning that into a page.
 
 ## Before you start
 
-- `uvx queria login` — creating pages needs an account and a token that can write.
-- Or, through the MCP server: `create_page`, `update_page`, `get_page` (and `read_doc("pages")`).
+Creating pages needs an account. Use the first route that is available:
+
+- The Queria MCP tools: `create_page`, `update_page`, `get_page`, `list_pages`,
+  `delete_page` (and `read_doc("pages")`). The sign-in of the connector is enough.
+- A shell: `uvx queria login`, then the `queria page` commands below.
 
 ## The loop
+
+With MCP: `create_page` with the Markdown (the result gives the URL), `get_page` to read
+it back, `update_page` to replace the Markdown or change the visibility. With the CLI:
 
 ```bash
 uvx queria page create report.md              # new page, private, URL printed
@@ -176,4 +182,4 @@ Aggregate in SQL rather than sending thousands of rows to a chart.
 - The slug is lowercase letters, digits and hyphens, and cannot be changed after creation.
 
 When queria.io refuses a page, the error says which rule it broke. Fix the Markdown and
-run `queria page edit` (or `create` if the first create failed) again.
+call `update_page` / `queria page edit` (or create again if the first create failed).

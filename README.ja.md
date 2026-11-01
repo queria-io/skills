@@ -8,7 +8,13 @@ Queria が公開する日本のオープンデータ（[data.queria.io](https://
 
 ## インストール
 
-Agent Skills 標準に対応したエージェント（Claude Code、OpenAI Codex、Cursor、OpenCode など）で利用できる。
+Claude（claude.ai、デスクトップ・モバイルのアプリ、Cowork）では Queria の MCP コネクタ経由で、Agent Skills 標準に対応したエージェント（Claude Code、OpenAI Codex、Cursor、OpenCode など）ではコネクタか queria CLI 経由で使える。
+
+### Claude（claude.ai・デスクトップ・Cowork）
+
+「Customize」>「Plugins」>「Add」>「Add marketplace」で `queria-io/skills` を入力し、`queria` プラグインを追加する。続けてプラグインの「Connectors」タブで Queria（`https://queria.io/mcp`）を接続すると、Queria のログイン画面が開く。スキルはコネクタのツールを使うので、質問する前に接続しておく。
+
+コネクタだけでも Claude は Queria のデータを読める。プラグインを入れると、テーブルの探し方、駅周辺の集計、場所の比較、ページの書き方のスキルが加わる。
 
 ### Queria CLI
 
@@ -65,22 +71,27 @@ npx skills add queria-io/skills
 | queria | 日本のオープンデータの発見・スキーマ把握・read-only SQL・横断結合・CSV/Parquet 書き出し・不足や不備の報告 |
 | queria-publish-dataset | 自分のデータセットの公開: 登録・宣言・ビルド・push |
 | queria-describe-dataset | 説明・`ai_context`・キーワード・別名を、どの階層に書くかの判断と、schema.org と GIF の語彙に沿った列名の付け方 |
-| queria-write-page | SQL とグラフでページ（記事・ダッシュボード）を書き、`queria page create` で公開する |
+| queria-write-page | SQL とグラフでページ（記事・ダッシュボード）を書き、`create_page` か `queria page create` で保存する |
 | queria-compare-areas | 出店・住まい選びなど場所の判断を、人口・昼間人口・駅・競合・地価で候補地を比べて答える |
 
 スキルの本体は [skills/queria/SKILL.md](skills/queria/SKILL.md)、定番クエリは [references/sql-recipes.md](skills/queria/references/sql-recipes.md)、問題の報告手順は [references/feedback.md](skills/queria/references/feedback.md) を参照。
 
-探索中に「このデータがない」「この列がおかしい」「ドキュメントが違う」と気づいたら、`uvx queria feedback send` で Queria に報告できる。送信前に必ず本文の全文が表示され、同意なしに送られることはない。エージェントが代わりに送るには、事前の明示的な許可が必要。
+探索中に「このデータがない」「この列がおかしい」「ドキュメントが違う」と気づいたら、`submit_feedback` か `uvx queria feedback send` で Queria に報告できる。送信前に必ず本文の全文が表示され、同意なしに送られることはない。エージェントが代わりに送るには、事前の明示的な許可が必要。
 
-可視化・統計分析・ダッシュボードはスコープ外。取得結果を CSV/Parquet に書き出し、可視化・分析用の別スキルや BI ツールに渡す。
+コネクタ経由では、結果を `show_chart` で表・グラフ・地図にして見せる。CLI では結果を CSV/Parquet に書き出して別のツールに渡す。
 
 ## 必要なもの
 
-[queria CLI](https://docs.queria.io/)（PyPI: `queria`）を使う。uv があれば `uvx queria` でインストール不要、なければ `pip install queria`（Python 3.10+）。認証は不要（匿名アクセスには[レートリミット](https://docs.queria.io/connection/authentication)がある）。
+次のどちらか。
 
-## シェルの無い環境（MCP）
+- [MCP コネクタ](https://docs.queria.io/mcp) `https://queria.io/mcp`（プラグインに `.mcp.json` として入っている）。Queria の無料アカウントが要る。無料プランの query は週 50 回まで。地点の周りの集計（商圏の関数）はこちらでだけ使える
+- [queria CLI](https://docs.queria.io/)（PyPI: `queria`）。シェルを使えるエージェント向け。uv があれば `uvx queria` でインストール不要、なければ `pip install queria`（Python 3.10+）。認証は不要（匿名アクセスには[レートリミット](https://docs.queria.io/connection/authentication)がある）
 
-Claude Desktop など、エージェントがシェルを使えない MCP クライアントからはスキルの代わりに [MCP サーバー](https://docs.queria.io/mcp)の URL `https://queria.io/mcp` を登録する。
+両方あるときは、スキルはコネクタを使う。
+
+## 送られるデータ
+
+スキルは指示の文書だけで、スキル自体は何も送らない。エージェントが書いた SQL と、利用者が承認したフィードバックが、コネクタか CLI を通して Queria（queria.io）に送られる。コネクタ経由では結果の行がエージェントに返り、そのエージェントの提供元にも渡る。詳しくは [MCP サーバー](https://docs.queria.io/mcp)を参照。
 
 ## 仕組み
 
