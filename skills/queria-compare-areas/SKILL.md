@@ -20,7 +20,8 @@ MCP tools when they are there, even with a shell:
   and decide the next SQL — this loop is where the analysis happens. It is there once the
   user has signed in, and calls are counted (the free plan has 50 a week), so put related
   checks into one SQL. If it says the allowance is used up, stop exploring and answer from
-  what you have.
+  what you have. If it is not in your tool list (some organisation tokens lack it), explore
+  with the CLI below and run the trade area functions in `show_chart`.
 - `show_chart` shows a table, chart or map of a SQL result to the user. Use it for the final
   comparison the user should look at, not to explore.
 - Trade area SQL functions, called inside the SQL of `query` or `show_chart`, each taking
@@ -37,10 +38,13 @@ Tables below are written as they go in SQL: dataset, schema and table, as in
 The schema is part of the name; do not replace it with `main`.
 
 Without the MCP tools, `uvx queria sql "<query>"` runs the same SQL from a shell, but the
-trade area functions are not there. Count the small areas whose centroid lies within the
-radius (`ST_Distance_Spheroid` on `ST_Centroid`, see the distance recipe in the queria
-skill's `references/sql-recipes.md`), say that the numbers are approximate, and suggest the
-connector (`https://queria.io/mcp`) for the exact ones.
+trade area functions are not there. This is the one place to approximate them: count the
+small areas of `e_stat.boundary.small_area` (`jinko`, `setai`) whose point lies within the
+radius. Narrow by a box on `x_code` / `y_code` first and measure with
+`ST_Distance_Spheroid` (see the distance recipe in the queria skill's
+`references/sql-recipes.md`) rather than taking `ST_Centroid` of every polygon. Say that the
+numbers are approximate, and suggest the connector (`https://queria.io/mcp`) for the exact
+ones.
 
 ## The method
 

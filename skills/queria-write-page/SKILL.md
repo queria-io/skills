@@ -34,11 +34,13 @@ uvx queria page edit alice/report --public    # publish (only when the user asks
 uvx queria page delete alice/report --yes
 ```
 
-With MCP: `create_page` with the Markdown (the result gives the URL), `get_page` to read
-it back, `update_page` to replace the Markdown or change the visibility.
+With MCP: `create_page` with the Markdown and a `slug` (required; the result gives the
+URL), `get_page` to read it back, `update_page` to replace the Markdown or change the
+visibility.
 
-The slug defaults to the file name (`report/index.md` → `report`). `--owner <handle>`
-creates the page in an organisation the user belongs to. New pages are **private**.
+With the CLI the slug defaults to the file name (`report/index.md` → `report`).
+`--owner <handle>` (`owner` in `create_page`) creates the page in an organisation the user
+belongs to. New pages are **private**.
 **Never make a page public unless the user asked for it** — public pages are visible to
 anyone and indexed by search engines. `--members` shows it to the owning account's members.
 

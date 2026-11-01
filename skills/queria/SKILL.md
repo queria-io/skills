@@ -19,7 +19,10 @@ Use the first one that works.
 1. **A shell** (Claude Code, Codex and other coding agents): run the queria CLI with
    `uvx queria …` (or `pip install queria`). It needs no sign-in and does not use the MCP
    allowance. If the command cannot run or cannot reach data.queria.io (a sandbox without
-   network, as in some chat apps), go to 2.
+   network, as in some chat apps), go to 2. If a subcommand is missing (`docs`, for
+   example), the uvx cache is stale: run `uvx queria@latest …`. Anonymous access is
+   rate-limited; when the CLI says the limit is reached, set up a token
+   (https://docs.queria.io/connection/authentication) or go to 2.
 2. **Queria MCP tools** (`search_catalog`, `query`, …) in your tool list: use them. This is
    the route in claude.ai, the Claude apps and Cowork.
 3. **Neither**: tell the user to add the connector `https://queria.io/mcp`
@@ -28,6 +31,8 @@ Use the first one that works.
 
 One exception to the order: the trade area functions below exist only in the MCP server.
 For numbers around a point, use `query` when the MCP tools are there, even with a shell.
+`query` is not offered to every account (some organisation tokens lack it); without it,
+call the trade area functions in the SQL of `show_chart`.
 
 | Step | MCP tool | CLI |
 |---|---|---|
@@ -76,8 +81,10 @@ FROM s, LATERAL trade_area_population(s.lng, s.lat, 1000) p
 `trade_area_small_areas` to `e_stat.census.census_small_area_age` on `area = key_code` and
 multiply by `share` (the queria-compare-areas skill has the details).
 
-These functions exist only in the MCP server. With only the CLI, say that the radius
-numbers need the connector or https://queria.io/gis, rather than rebuilding them by hand.
+These functions exist only in the MCP server. With only the CLI, say that the exact radius
+numbers need the connector or https://queria.io/gis, rather than rebuilding the circle
+overlaps by hand. For a location comparison, queria-compare-areas describes a rougher
+count by small-area point that it labels as approximate.
 
 ## Exploration workflow
 
@@ -117,8 +124,8 @@ GROUP BY 1, 2 ORDER BY zip_count DESC
 
 ### Common join keys
 
-Always verify digit counts and column names with `list_columns` / `columns`. A column
-description ending in `[key: city]` marks a key; `search_catalog(keys=["city"])` lists the
+Always verify digit counts and column names with `list_columns` / `columns`. In
+`list_columns`, a column description ending in `[key: city]` marks a key; `search_catalog(keys=["city"])` lists the
 tables you can join on it.
 
 - `lg_code`: national local government code (全国地方公共団体コード). `lg_code.main.mart_lg_code`
@@ -140,7 +147,8 @@ around a gap and move on; that information is only in your hands right now.
   Feedback is sent in their name.
 - **Never include query results, credentials, or personal data** in the message.
 
-Send one consolidated report near the end of the session. See `references/feedback.md`.
+Send one consolidated report near the end of the session, and do not nag — if the user is
+not interested, drop it. See `references/feedback.md`.
 
 ## Related skills
 
