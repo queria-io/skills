@@ -87,6 +87,8 @@ npx skills add queria-io/skills
 - [MCP コネクタ](https://docs.queria.io/mcp) `https://queria.io/mcp`（プラグインに `.mcp.json` として入っている）。Queria の無料アカウントが要る。無料プランの query は週 50 回まで。地点の周りの集計（商圏の関数）はこちらでだけ使える
 - [queria CLI](https://docs.queria.io/)（PyPI: `queria`）。シェルを使えるエージェント向け。uv があれば `uvx queria` でインストール不要、なければ `pip install queria`（Python 3.10+）。認証は不要（匿名アクセスには[レートリミット](https://docs.queria.io/connection/authentication)がある）
 
+claude.ai のコード実行でも、「外部ネットワークへの通信を許可」をオンにして、許可リストに `pypi.org`・`files.pythonhosted.org`・`extensions.duckdb.org`・`queria.io`・`data.queria.io` を入れれば（またはすべてのドメイン）CLI が使える。
+
 両方あるときは、スキルは CLI を使う。地点の周りの集計だけはコネクタを使う。queria-compare-areas はどの段でも地点の周りを数えるので、コネクタがあれば最初から最後までコネクタを使う。
 
 ## 送られるデータ
