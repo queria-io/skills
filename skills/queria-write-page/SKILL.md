@@ -99,7 +99,7 @@ queria.io refuses the page when:
 | ` ```sql caption="..."` | runs the query and shows the result as a table |
 | ` ```sql run=false` | shows SQL without running it |
 | ` ```plot caption="..."` | a Plotly chart; the JSON spec refers to data as `$<id>.<column>` |
-| ` ```gis` | a map of your query results, or a trade-area map around a point (see below) |
+| ` ```map` | a map of your query results, or a trade-area map around a point (see below) |
 
 `plot` takes a Plotly spec as JSON (`data` and `layout`), not JavaScript. Every `$<id>` must
 be a `sql id=` in the page. Each SQL block is one `SELECT`.
@@ -111,7 +111,7 @@ add a map around a representative point. It shows the population, households and
 inside the range, plus land prices and facilities, and the reader can click to move the
 point and recount, open it in the trade-area tool, or open the SQL behind the numbers.
 
-```gis
+```map
 type: around
 lng: 139.393896
 lat: 35.679414
@@ -150,7 +150,7 @@ To put rows from a `sql id=` block on a map, use `type: map` rather than writing
 latitude columns; the boundaries, colours, legend and the view that fits the data are built
 for you.
 
-```gis
+```map
 type: map
 caption: 市区町村別の人口
 layers:

@@ -82,7 +82,7 @@ FROM s, LATERAL trade_area_population(s.lng, s.lat, 1000) p
 multiply by `share` (the queria-compare-areas skill has the details).
 
 These functions exist only in the MCP server. With only the CLI, say that the exact radius
-numbers need the connector or https://queria.io/gis, rather than rebuilding the circle
+numbers need the connector or https://queria.io/maps, rather than rebuilding the circle
 overlaps by hand. For a location comparison, queria-compare-areas describes a rougher
 count by small-area point that it labels as approximate.
 
