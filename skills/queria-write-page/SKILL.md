@@ -1,6 +1,6 @@
 ---
 name: queria-write-page
-description: Write up findings from Queria data as a report on queria.io — Markdown with SQL, Plotly charts and trade-area maps that run in the reader's browser — and create, update or delete it with queria report or the MCP report tools. Covers the front matter, declaring datasets, sql/plot/gis code blocks, visibility, and what queria.io refuses. Use when the user wants a report, article, dashboard-like write-up or ページ/記事/レポート from Queria data. Querying the data itself is the queria skill.
+description: Write up findings from Queria data as a report on queria.io — Markdown with SQL, Plotly charts and trade-area maps that run in the reader's browser — and create, update or delete it with queria report or the MCP report tools. Covers the front matter, declaring datasets, sql/plot/map code blocks, visibility, and what queria.io refuses. Use when the user wants a report, article, dashboard-like write-up or ページ/記事/レポート from Queria data. Querying the data itself is the queria skill.
 ---
 
 # Writing a report on Queria
@@ -34,9 +34,9 @@ uvx queria report edit alice/report --public    # publish (only when the user as
 uvx queria report delete alice/report --yes
 ```
 
-With MCP: `create_report` with the Markdown and a `slug` (required; the result gives the
-URL), `get_report` to read it back, `update_report` to replace the Markdown or change the
-visibility.
+With MCP: `create_report` with the Markdown (add a `slug` only when the user wants a
+readable public URL; the result gives the URL), `get_report` to read it back,
+`update_report` to replace the Markdown or change the visibility or the slug.
 
 With the CLI the slug defaults to the file name (`report/index.md` → `report`).
 `--owner <handle>` (`owner` in `create_report`) creates the report in an organisation the user
@@ -184,7 +184,8 @@ Aggregate in SQL rather than sending thousands of rows to a chart.
 - No images yet (including `hero`).
 - Up to 20 datasets per report, 200KB of Markdown, tables up to 100 columns.
 - Up to 500 reports per account.
-- The slug is lowercase letters, digits and hyphens, and cannot be changed after creation.
+- The slug is lowercase letters, digits and hyphens. `queria report edit` cannot change it;
+  `update_report` can (an empty string removes it).
 
 When queria.io refuses a report, the error says which rule it broke. Fix the Markdown and
 call `update_report` / `queria report edit` (or create again if the first create failed).
