@@ -85,7 +85,7 @@ The README appears on the dataset page below the table list. Use this order:
 6. `## <schema>.<table>` — columns, grain and caveats per table
 7. `## 更新` — `uv sync` and `bash scripts/build.sh`
 
-`docs/*.md` pages linked from the README appear in the dataset page's 「ドキュメント」 tab.
+Every `docs/*.md` page appears in the dataset page's 「ドキュメント」 tab, whether or not the README links to it.
 When a dataset has many tables, move the per-table sections into `docs/*.md` and make the
 README a table of contents that links them.
 
