@@ -1,83 +1,64 @@
-# Splitting a dataset's caveats: a worked example
+# Shortening a table description: a worked example
 
-Queria's e-Stat dataset is where the rule in `SKILL.md` came from. It holds Japanese
-government statistics across 6 schemas and about 30 tables. Before the pass, everything
-that mattered lived in one field.
+Queria's e-Stat dataset (`e_stat`) is where the rules in `SKILL.md` came from. Its 66 table
+descriptions had a median of about 240 characters and some over 2,000: grain, source,
+coverage, validation numbers and source URLs, all in one field. Lists showed all of it on
+one line.
+
+## Before
+
+`building_starts.municipality_use`, 13 lines:
 
 ```
-dataset.yml
-  description              2 lines
-  ai_context.instructions  18 lines   ← 6 schemas, 30 tables, all in here
-*.table.yml
-  description              a line each, mostly restating the title
-  fields[].description     absent
+建築着工統計調査（建築物着工統計）の市区町村別・用途別（大分類）の着工建築物の数・床面積・工事費予定額（年次）。
+建築基準法の建築工事届にもとづく全数の集計で、床面積の合計が10平方メートルを超える建築物が対象。
+用途は18区分（居住専用住宅・製造業用・宿泊業，飲食サービス業用など）と、その計。
+収録は2011年〜2024年の14年、505,153行。地域は市区町村（特別区を含む。1年に1,716〜1,735）と
+政令指定都市の区（170〜175）。
+市区町村の行を足すと全国の値に一致する（建築物の数・床面積とも全年・全用途で実測）。区は政令指定都市の
+内訳なので、area_level で絞らずに合計すると政令指定都市の分を二重に数える。
+着工が1棟も無かった年の地域は行が無い。0 の行は持たない。
+工事費予定額は2019年までしか無い（2020年以降の市区町村別の表に項目が無い）。
+2019年までも秘匿（原典の「＊」）が用途の内訳の23%にあり、その値は NULL。
+地域コードは各年の時点のもので、合併で消えた市町村と浜松市の行政区再編前の区（2023年まで）は
+現行の code.municipality に無い。2024年の地域コードはすべて code.municipality に載る。
+出典: 国土交通省 建築着工統計調査 建築物着工統計。
 ```
-
-Nothing was wrong, exactly. It was just all at the layer where the fewest readers look and
-the most statements are only sometimes true.
 
 ## Sentence by sentence
 
-Each line below was in that 18-line block. The rule — *the smallest thing it is true of* —
-moves it somewhere specific.
+| The sentence | Moved to |
+| --- | --- |
+| What the table holds, by municipality and use, annual | the summary sentence |
+| Ward rows are a breakdown of designated cities; summing without `area_level` double-counts | caveat bullet 1 |
+| Estimated cost only up to 2019; suppressed values are NULL | caveat bullet 2 |
+| Area codes are as of each year; merged codes are missing from `code.municipality` | caveat bullet 3 |
+| Survey scope (building notices over 10 m²), 18 use categories, row counts | the table's section in `docs/building-starts.md` |
+| "Municipality rows sum to the national value (measured for all years)" | a validation number: the docs page, not the description |
+| Source and URLs | the README's 「出典と利用条件」 and `sources` in `dataset.yml` |
 
-| The sentence | True of | Moved to |
-| --- | --- | --- |
-| "Values are in one `value` column, so filter by indicator before summing" | the `value` and `cat01` columns of the 22 SSDS tables | those columns' `description` |
-| "Units differ per indicator, so summing across them is meaningless" | the `unit` column | that column's `description` |
-| "`area` includes a national total row" | one column of the prefecture tables | that column's `description` |
-| "Suppressed rows carry 0, which does not mean zero" | the `value` column of the 4 census tables | that column's `description` |
-| "Boundary polygons exclude water-surface survey areas" | one table | that table's `description` |
-| "Census `area` and boundary `key_code` are the same code system" | two schemas | stays at the dataset's `instructions` |
-| "Municipality codes are 5 digits, not the 6-digit local government code" | two schemas | stays at the dataset's `instructions` |
-
-The last two are the only ones you cannot say by looking at a single table. They are what
-the dataset layer is for.
-
-## What the column descriptions became
-
-Not a restatement of the name. The thing that makes someone's query wrong if they do not
-read it:
+## After
 
 ```yaml
-- name: cat01
-  description: >-
-    Indicator code. One letter (the table's category, A–K) plus 4–6 digits; longer codes
-    are breakdowns of shorter ones, and both sit in this column. Summing without filtering
-    on cat01 double-counts.
-- name: value
-  description: >-
-    The statistic. See unit for what it is measured in. Non-numeric source values ("-",
-    "X") land as NULL.
+description: |-
+  建築着工統計調査の市区町村別・用途別の着工建築物の数・床面積・工事費予定額を、2011年から年次で持つテーブルです。
+
+  - 市区町村と政令指定都市の区の行があるので、area_level で絞らずに合計すると二重に数えます
+  - 工事費予定額は2019年までで、秘匿の値は NULL です
+  - 地域コードは各年の時点のもので、合併で消えたコードは code.municipality にありません
 ```
 
-## What did not move
+The table list now shows only the first line. A reader who picks the table reads the three
+caveats on the table page, and the README or the docs page for the rest.
 
-The dataset's `description` stayed short. It answers "what is this" for someone scanning a
-list of datasets, and it is not where caveats belong.
+## The README
 
-`examples` stayed as three questions, matching headings in the cookbook manuscripts:
-
-```yaml
-examples:
-  - 市区町村別の人口の推移を出したい
-  - 小地域の年齢構成を地図に出したい
-  - 消費者物価指数の推移を品目別に見たい
-```
-
-## The keyword overlap
-
-`e-Stat` appeared in both `keywords` and `ai_context.synonyms`. It only ever means this
-dataset, so it belongs in `synonyms` alone:
-
-```yaml
-keywords: [統計, 人口, 社会]
-ai_context:
-  synonyms: [e-Stat, 政府統計, 社会・人口統計体系, SSDS, 国勢調査, 小地域, 消費者物価指数]
-```
+With 66 tables, per-table sections would make the README too long. `e_stat`'s README is a
+table of contents instead: 出典と利用条件, a list of schemas linking to `docs/<schema>.md`,
+one SQL example under 使い方, three caveats that span schemas under 注意, and 更新. The
+one-time import procedure for `local_tables.yml` moved to `MAINTAINING.md`.
 
 ## The tell
 
-If the dataset's `instructions` is much longer than its `description`, the split has not
-been done. Long `instructions` are not a sign of a well-documented dataset; they are a
-sign that nobody decided where anything goes.
+If a table description needs more than three bullets, either the details belong in the
+README, or the table should be split so the caveat is no longer needed.
