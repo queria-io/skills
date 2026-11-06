@@ -70,7 +70,7 @@ You can also clone this repository and copy the skill folder into your agent's s
 | --- | --- |
 | queria | Discovering Japanese open data, inspecting schemas, read-only SQL, cross-dataset joins, CSV/Parquet export, reporting gaps back to Queria |
 | queria-publish-dataset | Publishing a dataset of your own: registering it, declaring it, building, pushing |
-| queria-describe-dataset | Deciding which layer each description, `ai_context` entry, keyword or synonym belongs to, and naming columns after schema.org and the GIF vocabulary |
+| queria-describe-dataset | Writing short dataset, table and column descriptions with the details in the README, and naming columns after schema.org and the GIF vocabulary |
 | queria-write-page | Writing a report from SQL and charts, and saving it with `create_report` or `queria report create` |
 | queria-compare-areas | Comparing places in Japan for a location decision (where to open a shop, where to live) from population, daytime population, stations, competitors and land prices |
 
