@@ -25,7 +25,7 @@ Use the first one that works.
    (https://docs.queria.io/connection/authentication) or go to 2.
 2. **Queria MCP tools** (`search_catalog`, `query`, …) in your tool list: use them. This is
    the route in claude.ai, the Claude apps and Cowork.
-3. **Neither**: tell the user to add the connector `https://queria.io/mcp`
+3. **Neither**: tell the user to add the connector `https://mcp.queria.io`
    (https://docs.queria.io/ai-chat) and stop. Do not answer from memory or web articles
    when the question is about the numbers Queria holds.
 
