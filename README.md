@@ -95,7 +95,7 @@ When both are there, the skills use the CLI, except for counting around a point,
 
 ## Data
 
-The skills contain only instructions; they send nothing themselves. The SQL the agent writes, and the feedback you approve, go to Queria (queria.io) through the connector or the CLI. Through the connector, result rows go back to the agent and so to its provider. See [MCP server](https://docs.queria.io/en/mcp).
+The skills contain only instructions; they send nothing themselves. The SQL the agent writes, and the feedback you approve, go to Queria through the connector (mcp.queria.io) or the CLI (queria.io). Through the connector, result rows go back to the agent and so to its provider. See [MCP server](https://docs.queria.io/en/mcp).
 
 ## How it works
 
