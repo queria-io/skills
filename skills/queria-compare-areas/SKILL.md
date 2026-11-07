@@ -43,7 +43,7 @@ small areas of `e_stat.boundary.small_area` (`jinko`, `setai`) whose point lies 
 radius. Narrow by a box on `x_code` / `y_code` first and measure with
 `ST_Distance_Spheroid` (see the distance recipe in the queria skill's
 `references/sql-recipes.md`) rather than taking `ST_Centroid` of every polygon. Say that the
-numbers are approximate, and suggest the connector (`https://queria.io/mcp`) for the exact
+numbers are approximate, and suggest the connector (`https://mcp.queria.io`) for the exact
 ones.
 
 ## The method

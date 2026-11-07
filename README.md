@@ -12,7 +12,7 @@ Works in Claude (claude.ai, the desktop and mobile apps, Cowork) through the Que
 
 ### Claude (claude.ai, desktop, Cowork)
 
-In **Customize > Plugins > Add > Add marketplace**, enter `queria-io/skills` and add the `queria` plugin. Then open the plugin's **Connectors** tab and connect Queria (`https://queria.io/mcp`), which opens Queria's sign-in. The skills use the connector's tools, so connect it before you ask.
+In **Customize > Plugins > Add > Add marketplace**, enter `queria-io/skills` and add the `queria` plugin. Then open the plugin's **Connectors** tab and connect Queria (`https://mcp.queria.io`), which opens Queria's sign-in. The skills use the connector's tools, so connect it before you ask.
 
 The connector alone already lets Claude read Queria's data. The plugin adds the skills: how to find tables, count around a station, compare places and write a page.
 
@@ -86,7 +86,7 @@ If you publish data rather than consume it, the two publishing skills cover the 
 
 Either of these:
 
-- The [MCP connector](https://docs.queria.io/en/mcp) `https://queria.io/mcp` (bundled in the plugin as `.mcp.json`). Needs a free Queria account; the free plan runs up to 50 queries a week. Counting around a point (trade area functions) works only here
+- The [MCP connector](https://docs.queria.io/en/mcp) `https://mcp.queria.io` (bundled in the plugin as `.mcp.json`). Needs a free Queria account; the free plan runs up to 50 queries a week. Counting around a point (trade area functions) works only here
 - The [queria CLI](https://docs.queria.io/en) (PyPI: `queria`), for agents with a shell. With uv, `uvx queria` needs no install; otherwise `pip install queria` (Python 3.10+). No authentication required (anonymous access is [rate-limited](https://docs.queria.io/en/authentication))
 
 In claude.ai's code execution, the CLI works when "Allow network egress" is on and the allowlist includes `pypi.org`, `files.pythonhosted.org`, `extensions.duckdb.org`, `queria.io` and `data.queria.io` (or all domains).

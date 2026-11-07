@@ -2,7 +2,7 @@
   "mcpServers": {
     "queria": {
       "type": "http",
-      "url": "https://queria.io/mcp"
+      "url": "https://mcp.queria.io"
     }
   }
 }

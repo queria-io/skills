@@ -9,8 +9,8 @@
     {
       "name": "queria",
       "source": ".",
-      "description": "Queria's Japanese open data and public statistics in Claude: the Queria connector (https://queria.io/mcp) reads the data, and the skills add the workflows on top. Find tables, count population and households around a station or address, join across datasets (e-Stat statistics, census small areas, shops and facilities, land prices, corporate registry, postal codes and more), compare places for a location decision (where to open a shop, where to live), write the result up as a page with SQL and charts, and publish datasets of your own with the queria CLI.",
-      "version": "0.8.0",
+      "description": "Queria's Japanese open data and public statistics in Claude: the Queria connector (https://mcp.queria.io) reads the data, and the skills add the workflows on top. Find tables, count population and households around a station or address, join across datasets (e-Stat statistics, census small areas, shops and facilities, land prices, corporate registry, postal codes and more), compare places for a location decision (where to open a shop, where to live), write the result up as a page with SQL and charts, and publish datasets of your own with the queria CLI.",
+      "version": "0.8.1",
       "author": {
         "name": "queria-io"
       },
