@@ -43,6 +43,11 @@ when someone else pushed after your checkout: check out again and rebuild.
 Do not ask the user which build tool to standardise on. Use what the repository already
 has; if there is nothing, the smallest thing that writes a table is enough.
 
+Write the tables people query as tables, not views (in dbt, `+materialized: table` for the
+models you declare). A view is computed from its sources every time it is read, and
+`fdl push` computes each view in full to profile it, so views make queries and pushes slow.
+Views are fine for intermediate steps you do not declare.
+
 ## The declarations
 
 Two kinds, in the directory `fdl commit` runs from. Directory names are free — what a file
