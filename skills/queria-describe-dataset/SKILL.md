@@ -36,7 +36,7 @@ description: |-
 
   - 市区町村と政令指定都市の区の行があるので、area_level で絞らずに合計すると二重に数えます
   - 工事費予定額は2019年までで、秘匿の値は NULL です
-  - 地域コードは各年の時点のもので、合併で消えたコードは code.municipality にありません
+  - 地域コードは各年の時点のもので、合併で消えたコードは soumu.code.municipality にありません
 ```
 
 Write descriptions and `docs/` in plain です・ます Japanese for Japanese datasets.
