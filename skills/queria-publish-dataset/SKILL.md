@@ -43,6 +43,12 @@ when someone else pushed after your clone: clone again and rebuild.
 Do not ask the user which build tool to standardise on. Use what the repository already
 has; if there is nothing, the smallest thing that writes a table is enough.
 
+We recommend, but do not require, building in three steps: raw (the data as fetched, the
+only step that reads the fetched files), stg (one raw table typed, renamed and normalized) and
+mart (joins, reshaping and the grain; the tables you declare live here). Keep fetch scripts
+to fetching and converting file formats, and do the content transformations in stg and mart.
+See https://docs.queria.io/en/publish/conventions#transformation-steps.
+
 Write the tables people query as tables, not views (in dbt, `+materialized: table` for the
 models you declare). A view is computed from its sources every time it is read, and
 `fdl push` computes each view in full to profile it, so views make queries and pushes slow.
