@@ -21,7 +21,7 @@ one line.
 工事費予定額は2019年までしか無い（2020年以降の市区町村別の表に項目が無い）。
 2019年までも秘匿（原典の「＊」）が用途の内訳の23%にあり、その値は NULL。
 地域コードは各年の時点のもので、合併で消えた市町村と浜松市の行政区再編前の区（2023年まで）は
-現行の code.municipality に無い。2024年の地域コードはすべて code.municipality に載る。
+現行の soumu.code.municipality に無い。2024年の地域コードはすべて soumu.code.municipality に載る。
 出典: 国土交通省 建築着工統計調査 建築物着工統計。
 ```
 
@@ -32,7 +32,7 @@ one line.
 | What the table holds, by municipality and use, annual | the summary sentence |
 | Ward rows are a breakdown of designated cities; summing without `area_level` double-counts | caveat bullet 1 |
 | Estimated cost only up to 2019; suppressed values are NULL | caveat bullet 2 |
-| Area codes are as of each year; merged codes are missing from `code.municipality` | caveat bullet 3 |
+| Area codes are as of each year; merged codes are missing from `soumu.code.municipality` | caveat bullet 3 |
 | Survey scope (building notices over 10 m²), 18 use categories, row counts | `docs/building_starts/municipality_use.md` |
 | "Municipality rows sum to the national value (measured for all years)" | a validation number: the docs page, not the description |
 | Source and URLs | the 「出典と利用条件」 of `docs/index.md` and `sources` in `dataset.yml` |
@@ -45,7 +45,7 @@ description: |-
 
   - 市区町村と政令指定都市の区の行があるので、area_level で絞らずに合計すると二重に数えます
   - 工事費予定額は2019年までで、秘匿の値は NULL です
-  - 地域コードは各年の時点のもので、合併で消えたコードは code.municipality にありません
+  - 地域コードは各年の時点のもので、合併で消えたコードは soumu.code.municipality にありません
 ```
 
 The table list now shows only the first line. A reader who picks the table reads the three
