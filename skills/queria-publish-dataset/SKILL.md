@@ -29,16 +29,16 @@ gets the dataset into the catalog and keeps it there.
 ```bash
 uvx queria create my-dataset        # register it (private unless you pass --public)
 # write dataset.yml and *.table.yml
-uvx --from fdl-cli fdl checkout https://data.queria.io/datasets/<handle>/my-dataset/ .fdl/work.sqlite
-# run the build, writing into the working catalog (attach it with the statement checkout prints)
+uvx --from fdl-cli fdl clone https://data.queria.io/datasets/<handle>/my-dataset/ .fdl/work.sqlite
+# run the build, writing into the working catalog (attach it with the statement clone prints)
 FDL_WORKING=.fdl/work.sqlite uvx queria validate   # check the declarations against the data
 uvx --from fdl-cli fdl commit .fdl/work.sqlite -m "Build" --author <name>
 uvx --from fdl-cli fdl push .fdl/work.sqlite
 ```
 
-`checkout` copies the published version into a working catalog; `commit` freezes it with the
+`clone` copies the published version into a working catalog; `commit` freezes it with the
 declarations into a new version; `push` uploads it and Queria publishes it. A push is refused
-when someone else pushed after your checkout: check out again and rebuild.
+when someone else pushed after your clone: clone again and rebuild.
 
 Do not ask the user which build tool to standardise on. Use what the repository already
 has; if there is nothing, the smallest thing that writes a table is enough.
@@ -123,8 +123,8 @@ Keep going rather than stopping on thin input, except where a wrong guess is exp
 | `attribution-missing` | Licence needs attribution, `contributors` absent | Add `contributors` with `roles: [rightsHolder]` |
 | `table-not-declared` | Data has a table no `*.table.yml` covers | Declare it, or stop building it |
 | dbt fails reading a `.yml` | `*.table.yml` under dbt's `model-paths` | Add `*.table.yml` to `.dbtignore` |
-| `fdl commit` refuses inlined rows | DuckLake inlined rows into the catalog | Set `DATA_INLINING_ROW_LIMIT` to 0, as checkout's `ATTACH` does |
-| `fdl push` is refused | Someone pushed after your checkout | `fdl checkout` again and rebuild |
+| `fdl commit` refuses inlined rows | DuckLake inlined rows into the catalog | Set `DATA_INLINING_ROW_LIMIT` to 0, as clone's `ATTACH` does |
+| `fdl push` is refused | Someone pushed after your clone | `fdl clone` again and rebuild |
 
 The `.dbtignore` one is easy to miss. Check for them before declaring
 success.
