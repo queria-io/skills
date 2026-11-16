@@ -71,9 +71,9 @@ suppression, coverage, the source's own inconsistencies.
 
 ## What stays out of descriptions
 
-- Validation numbers ("matches the national total", "0 mismatches") → dbt tests, or a file for maintainers that is not listed in `docs:`
+- Validation numbers ("matches the national total", "0 mismatches") → dbt tests, or `CONTRIBUTING.md`
 - Full license text → `licenses` and the 「出典と利用条件」 of `README.md`
-- Processing and build steps → a file for maintainers that is not listed in `docs:`
+- Processing and build steps → `CONTRIBUTING.md` (not listed in `docs:`)
 - Runnable SQL → the 「使い方」 of `README.md`, or a guide
 
 ## README.md layout
@@ -133,7 +133,7 @@ fields:
 ```
 
 Relative links between these files work on GitHub and on Queria alike. Build and
-maintenance steps go in a file that is not listed in `docs:`.
+maintenance steps go in `CONTRIBUTING.md`, which is not listed in `docs:`.
 
 Repositories still on `dataset.yml`, `*.table.yml` and `docs/` keep working; there the place
 of a file under `docs/` decides where it is shown (`docs/index.md` the dataset,
