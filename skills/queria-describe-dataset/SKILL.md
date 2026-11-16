@@ -1,15 +1,16 @@
 ---
 name: queria-describe-dataset
-description: Write short dataset, table and column descriptions for a Queria dataset and put the details in docs/*.md — decide what goes where and how long each is, fix pitfalls in the data's shape before describing them, write keywords, and name columns after schema.org or, for Japanese public data, the government vocabulary (GIF). Use when writing or fixing dataset.yml / *.table.yml descriptions, keywords, the dataset's docs/index.md (説明・ドキュメント・メタデータの書き方), when naming columns or their Japanese titles (列名・英語名), or when descriptions have grown too long to read. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
+description: Write short dataset, table and column descriptions for a Queria dataset and put the details in README.md and each table's guide — decide what goes where and how long each is, fix pitfalls in the data's shape before describing them, write keywords, and name columns after schema.org or, for Japanese public data, the government vocabulary (GIF). Use when writing or fixing queria.yml or a table's Markdown (or the older dataset.yml / *.table.yml), keywords, the dataset's README.md (説明・ドキュメント・メタデータの書き方), when naming columns or their Japanese titles (列名・英語名), or when descriptions have grown too long to read. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
 ---
 
 # Describing a Queria dataset
 
 A Queria dataset has these places to write down what you know: the `description` of the
-dataset, of each table and of each column, and the Markdown files in `docs/`. Descriptions
-appear as-is in lists and search results, so they stay short. Everything else goes in
-`docs/`. The root `README.md` describes the repository (build and maintenance steps) and is
-not shown on Queria.
+dataset (in `queria.yml`), of each table and of each column (in the front matter of the
+table's Markdown file), the text below that front matter (the table's guide), the root
+`README.md` (the dataset's overview) and other documents listed in `queria.yml`.
+Descriptions appear as-is in lists and search results, so they stay short. Everything else
+goes in the guides and documents.
 
 Where `queria-publish-dataset` gets the dataset into the catalog, this skill decides **what
 goes where, and how long it is**.
@@ -18,14 +19,13 @@ goes where, and how long it is**.
 
 | Where | What | Length |
 | --- | --- | --- |
-| Dataset `description` | What the data is, and its source | 1–2 sentences plus 1 on the source (about 100 Japanese characters) |
-| Table `description` | What one row represents, what is easy to get wrong | A 1-sentence summary (about 80 characters), a blank line, up to 3 caveat bullets |
-| Column `description` | Definition, unit, code system | About 50 characters |
-| `docs/index.md` | Source and license, table list, example SQL, caveats that span several tables | No limit |
-| `docs/<schema>/index.md` | Notes on a schema and SQL that spans its tables | No limit |
-| `docs/<schema>/<table>.md` | SQL examples and caveats for one table | No limit |
-| `docs/<name>.md` | Guides that span schemas | No limit |
-| `README.md` | Build and maintenance steps for the repository (not shown on Queria) | No limit |
+| Dataset `description` (`queria.yml`) | What the data is, and its source | 1–2 sentences plus 1 on the source (about 100 Japanese characters) |
+| Table `description` (front matter) | What one row represents, what is easy to get wrong | A 1-sentence summary (about 80 characters), a blank line, up to 3 caveat bullets |
+| Column `description` (front matter) | Definition, unit, code system | About 50 characters |
+| `README.md` | Source and license, table list, example SQL, caveats that span several tables | No limit |
+| A schema's `guide:` file | Notes on a schema and SQL that spans its tables | No limit |
+| The table's guide (below its front matter) | SQL examples and caveats for one table | No limit |
+| Files listed in `docs:` | Guides that span schemas | No limit |
 
 Table lists and search results show only the **first paragraph** of a table description.
 Write the summary so a reader can decide from it alone whether to use the table.
@@ -39,7 +39,7 @@ description: |-
   - 地域コードは各年の時点のもので、合併で消えたコードは soumu.code.municipality にありません
 ```
 
-Write descriptions and `docs/` in plain です・ます Japanese for Japanese datasets.
+Write descriptions and guides in plain です・ます Japanese for Japanese datasets.
 Use 「データセット」「テーブル」「列」「バージョン」.
 
 ## Write it where it is true
@@ -49,10 +49,10 @@ Pick the smallest thing the sentence is true of.
 | The sentence is true of | Where it goes |
 | --- | --- |
 | One column | that column's `description` |
-| One table | that table's `description` (or `docs/<schema>/<table>.md`, if it does not fit in 3 bullets) |
-| More than one table | the 「注意」 of `docs/index.md` (or `docs/<schema>/index.md` within one schema) |
+| One table | that table's `description` (or its guide, if it does not fit in 3 bullets) |
+| More than one table | the 「注意」 of `README.md` (or the schema's `guide:` file within one schema) |
 | What people call this dataset | `keywords` |
-| Something you can run as SQL | the 「使い方」 of `docs/index.md`, or the `docs/` file for that table or schema |
+| Something you can run as SQL | the 「使い方」 of `README.md`, or the guide of that table or schema |
 
 **Once it is written small, do not repeat it upward.** Two copies drift apart when only
 one gets fixed.
@@ -71,50 +71,73 @@ suppression, coverage, the source's own inconsistencies.
 
 ## What stays out of descriptions
 
-- Validation numbers ("matches the national total", "0 mismatches") → dbt tests or `README.md`
-- Full license text → `licenses` and the 「出典と利用条件」 of `docs/index.md`
-- Processing and build steps → `README.md`
-- Runnable SQL → the 「使い方」 of `docs/index.md`, or another file in `docs/`
+- Validation numbers ("matches the national total", "0 mismatches") → dbt tests, or `CONTRIBUTING.md`
+- Full license text → `licenses` and the 「出典と利用条件」 of `README.md`
+- Processing and build steps → `CONTRIBUTING.md` (not listed in `docs:`)
+- Runnable SQL → the 「使い方」 of `README.md`, or a guide
 
-## docs/index.md layout
+## README.md layout
 
-`docs/index.md` appears on the dataset page below the table list. Use this order:
+`README.md` is the dataset's overview: Queria shows it on the dataset page, and GitHub on the
+repository's front page. Use this order:
 
 1. `# <dataset title>` and 1–2 sentences on what the data is
 2. `## 出典と利用条件` — links to the sources and the terms of use
-3. `## テーブル` — table name, contents and row count
+3. `## テーブル` — table name, contents and row count. Link each table to its Markdown file
 4. `## 使い方` — SQL that runs as-is against the published dataset
 5. `## 注意` — caveats that span several tables
 
-Write the columns, grain and caveats of each table in `docs/<schema>/<table>.md`.
+Write the columns, grain and caveats of each table in the table's guide.
 
-## Placing files in docs/
+## Where the files go
 
-Place the files in `docs/` to match the dataset, schema and table hierarchy. Where a file is
-placed decides which page shows it. A folder's own description is its `index.md`.
+A table's Markdown file names its table in `table:`, so it can sit anywhere: next to the dbt
+model that builds it is easiest to keep in step. Other documents sit wherever you like and
+are listed in `queria.yml`; nothing is decided by where a file is.
 
-| Path | Describes | Shown on |
-| --- | --- | --- |
-| `docs/index.md` | The dataset | The dataset page (below the table list) |
-| `docs/<schema>/index.md` | A schema | The schema page (below the table list) |
-| `docs/<schema>/<table>.md` | A table | The table's 「ガイド」 tab |
-| `docs/<name>.md` | Content that spans schemas | The 「ドキュメント」 tab |
-
-```text
-README.md                    # the repository: build and maintenance steps (not shown on Queria)
-docs/
-  index.md                   # the dataset
-  catalog.md                 # a guide that spans schemas
-  census/
-    index.md                 # the census schema
-    census_municipality.md   # census.census_municipality
+```yaml
+# queria.yml
+schemas:
+  - name: census
+    title: 国勢調査
+    guide: docs/census.md        # shown on the schema page
+docs: [docs/catalog.md]          # shown on the 「ドキュメント」 tab, in this order
 ```
 
-Start the root `README.md` with a link to `docs/index.md`, then the build steps
-(`## ビルド` or `## 更新`: `uv sync` and `bash scripts/build.sh`) and anything else a
-maintainer needs.
+```text
+README.md                                   # the dataset's overview
+queria.yml
+docs/
+  catalog.md                                # a guide that spans schemas
+  census.md                                 # the census schema
+models/census/census_municipality.sql
+models/census/census_municipality.md        # census.census_municipality: description and guide
+```
 
-`docs/` is published with the dataset by `fdl commit`.
+```markdown
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: census.census_municipality
+title: 市区町村別人口
+description: |-
+  国勢調査の市区町村別の男女別人口です。1 行が 1 市区町村の 1 回の調査です。
+fields:
+  - name: area
+    title: 地域コード
+    semantic: {role: entity, name: city}
+---
+
+## 使い方
+
+…
+```
+
+Relative links between these files work on GitHub and on Queria alike. Build and
+maintenance steps go in `CONTRIBUTING.md`, which is not listed in `docs:`.
+
+Repositories still on `dataset.yml`, `*.table.yml` and `docs/` keep working; there the place
+of a file under `docs/` decides where it is shown (`docs/index.md` the dataset,
+`docs/<schema>/index.md` a schema, `docs/<schema>/<table>.md` a table).
 
 ## Naming columns
 
@@ -164,11 +187,11 @@ Words specific to one table go in that table's own `keywords`, not the dataset's
 1. Read the data before writing about it. Query the published dataset, or the local build.
    Do not describe what you assume is there.
 2. Write each table's summary sentence, then its caveats. Anything that does not fit in 3
-   bullets goes in `docs/<schema>/<table>.md`.
+   bullets goes in the table's guide.
 3. Move validation numbers, license text and build steps out of the descriptions.
-4. Write `docs/index.md` in the layout above. Run every SQL example in 「使い方」.
+4. Write `README.md` in the layout above. Run every SQL example in 「使い方」.
 5. Check that no sentence from the old descriptions was lost: each one is now in a
-   description, a file in `docs/` or `README.md`.
+   description, a guide, a document or the maintainers' file.
 
 See `references/splitting-a-dataset.md` for a worked before/after on a real dataset.
 
@@ -179,9 +202,9 @@ See `references/splitting-a-dataset.md` for a worked before/after on a real data
 - Is the same thing written in two places?
 - Could the shape of a table or column prevent the mistake instead of a caveat?
 - Did SQL, validation numbers or build steps end up in a description?
-- Does every SQL example in `docs/` run?
+- Does every SQL example in the guides and documents run?
 - Is any new column an abbreviation listed in `aliases` in `data_elements.csv`?
-- Does `uvx queria validate` still pass?
+- Does `uvx queria metadata validate` still pass?
 
 Full reference: https://docs.queria.io/publish/writing-descriptions (what goes where) and
 https://docs.queria.io/publish/conventions (names, types, grain, keys) — if this skill and
