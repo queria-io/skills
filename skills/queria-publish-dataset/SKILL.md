@@ -1,6 +1,6 @@
 ---
 name: queria-publish-dataset
-description: Publish a dataset of your own to Queria (data.queria.io) — register it, declare it in dataset.yml and *.table.yml, build it with any tool you like, and push. Covers what queria validate refuses and why, licence ids, and the two settings that silently produce a broken dataset. Use when you have data of your own (自分のデータ) and want it in Queria's catalog, or when queria validate / fdl commit / fdl push is failing. Not for querying data that is already published (that is the queria skill), and it does not decide what your descriptions should say (queria-describe-dataset does).
+description: Publish a dataset of your own to Queria (data.queria.io) — register it, describe it in queria.yml and a Markdown file per table, build it with any tool you like, pack and push. Covers what queria metadata validate refuses and why, licence ids, and the two settings that silently produce a broken dataset. Use when you have data of your own (自分のデータ) and want it in Queria's catalog, or when queria metadata validate / pack, fdl commit or fdl push is failing. Not for querying data that is already published (that is the queria skill), and it does not decide what your descriptions should say (queria-describe-dataset does).
 ---
 
 # Publishing a dataset on Queria
@@ -28,16 +28,18 @@ gets the dataset into the catalog and keeps it there.
 
 ```bash
 uvx queria create my-dataset        # register it (private unless you pass --public)
-# write dataset.yml and *.table.yml
+# write queria.yml and a Markdown file per table
 uvx --from fdl-cli fdl clone https://data.queria.io/datasets/<handle>/my-dataset/ .fdl/work.sqlite
 # run the build, writing into the working catalog (attach it with the statement clone prints)
-FDL_WORKING=.fdl/work.sqlite uvx queria validate   # check the declarations against the data
-uvx --from fdl-cli fdl commit .fdl/work.sqlite -m "Build" --author <name>
+FDL_WORKING=.fdl/work.sqlite uvx queria metadata pack   # check, then write .queria/pack/
+uvx --from fdl-cli fdl commit .fdl/work.sqlite --dataset .queria/pack/dataset.json -m "Build" --author <name>
 uvx --from fdl-cli fdl push .fdl/work.sqlite
 ```
 
-`clone` copies the published version into a working catalog; `commit` freezes it with the
-declarations into a new version; `push` uploads it and Queria publishes it. A push is refused
+`clone` copies the published version into a working catalog; `pack` checks the description
+against Queria's rules and the data and writes the folder a version is made from
+(dataset.json, README.md, the guides and documents); `commit` freezes the catalog with that
+folder into a new version; `push` uploads it and Queria publishes it. A push is refused
 when someone else pushed after your clone: clone again and rebuild.
 
 Do not ask the user which build tool to standardise on. Use what the repository already
@@ -54,19 +56,18 @@ models you declare). A view is computed from its sources every time it is read, 
 `fdl push` computes each view in full to profile it, so views make queries and pushes slow.
 Views are fine for intermediate steps you do not declare.
 
-## The declarations
+## The description
 
-Two kinds, in the directory `fdl commit` runs from. Directory names are free — what a file
-declares comes from its contents (`schema` and `name`), not from where it sits. What only
-Queria reads (themes, a column's `semantic`, the title's reading) goes under `annotations.queria`.
+Two kinds of file. Each names its format in `$schema`, and only files that do are read.
 
 | File | Content |
 | --- | --- |
-| `dataset.yml` (repository root, required) | the dataset itself |
-| `**/*.table.yml` (anywhere) | one table, or several |
+| `queria.yml` (repository root) | the dataset itself |
+| a Markdown file per table (any name, anywhere) | the table's description in the front matter, its guide below |
 
 ```yaml
-# dataset.yml
+# queria.yml
+$schema: https://queria.io/schemas/dataset/v1.json
 name: calendar
 title: Japanese calendar
 description: A date spine from 1955 to 2027 with holidays, weekdays and Japanese eras.
@@ -77,34 +78,36 @@ contributors:
     roles: [rightsHolder]
 ```
 
-```yaml
-# models/calendar/day.table.yml
-schema: calendar
-name: day
+```markdown
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: calendar.day
 title: Japanese calendar
-primary_key: date
+primary_key: [date]
 fields:
   - name: date
     title: Date
+    semantic: {role: entity, name: date}
+---
+
+Holidays follow the Cabinet Office's list.
 ```
+
+`table:` says which table the file describes, so put it where it is easiest to keep in step,
+such as next to the dbt model. Keys only Queria reads (themes, cover, a column's `semantic`,
+`published`) sit at the same level as the rest. The root `README.md` is the dataset's
+overview. Other documents are listed in `queria.yml` under `docs:`.
 
 **Never write column types.** Types, column order and nullability are read from the data,
 so they cannot drift from it. Writing them is rejected.
 
-**Declare `primary_key`** with the column, or list of columns, that identifies one row.
-`queria validate` reads the data and rejects repeated or NULL key values, so a failure there
-means either the data has duplicates or the declared grain is wrong.
+**Declare `primary_key`** with the list of columns that identifies one row.
+`queria metadata validate` reads the data and rejects repeated or NULL key values, so a
+failure there means either the data has duplicates or the declared grain is wrong.
 
-Tables sharing a column layout go in one file, with YAML anchors carrying the shared part:
-
-```yaml
-_fields: &fields
-  - { name: local_government_code, title: Local government code, annotations: { queria: { semantic: { role: entity, name: city } } } }
-  - { name: value, title: Value, annotations: { queria: { semantic: { role: measure, agg: sum } } } }
-tables:
-  - { schema: ssds, name: a_population, title: Population, fields: *fields }
-  - { schema: ssds, name: b_land,       title: Land,       fields: *fields }
-```
+Repositories still on `dataset.yml` and `*.table.yml` keep working with the same commands.
+`queria metadata unpack <folder>` writes a version's description (what `fdl clone` gives, or
+another pack) back into these files, so changes made on Queria come back into the code.
 
 ## What to infer, and what to ask
 
@@ -120,20 +123,18 @@ Keep going rather than stopping on thin input, except where a wrong guess is exp
 
 ## Errors
 
-`validate` prints `level: source: message [code]`. Read the code, not the prose.
+`queria metadata validate` (and `pack`) prints `level: source: message [code]`. Read the code, not the prose.
 
 | What you see | Cause | Fix |
 | --- | --- | --- |
 | `licenses-missing` (warning) | No `licenses` | Fine, but the user reserves every right. Confirm they meant to |
 | a license id is rejected | Free text instead of an id | Ask which licence; use the registry id |
 | `attribution-missing` | Licence needs attribution, `contributors` absent | Add `contributors` with `roles: [rightsHolder]` |
-| `table-not-declared` | Data has a table no `*.table.yml` covers | Declare it, or stop building it |
-| dbt fails reading a `.yml` | `*.table.yml` under dbt's `model-paths` | Add `*.table.yml` to `.dbtignore` |
+| `schema-violation` | A key the format does not define, often a typo | Fix the key; the message names where |
+| `fdl-rejected`, "described but not in the catalog" | `table:` names a table the build did not make | Fix the name, or build the table |
+| "$schema … update queria" | The file is written for a newer format | `uvx queria@latest` |
 | `fdl commit` refuses inlined rows | DuckLake inlined rows into the catalog | Set `DATA_INLINING_ROW_LIMIT` to 0, as clone's `ATTACH` does |
 | `fdl push` is refused | Someone pushed after your clone | `fdl clone` again and rebuild |
-
-The `.dbtignore` one is easy to miss. Check for them before declaring
-success.
 
 ## Verify as a reader
 
@@ -148,7 +149,7 @@ uvx queria sql "SELECT * FROM my-dataset.main.some_table LIMIT 5"
 
 ## Constraints
 
-- Do not hand-edit a version's `dataset.json`. `fdl commit` makes it from the declarations and the data.
+- Do not hand-edit `dataset.json`. `queria metadata pack` makes it from queria.yml and the table files, and `fdl commit` adds what the data says.
 - Do not make a dataset public without being asked to.
 - `queria delete` is immediate. Confirm the name with the user before running it.
 

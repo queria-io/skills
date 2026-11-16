@@ -33,9 +33,9 @@ one line.
 | Ward rows are a breakdown of designated cities; summing without `area_level` double-counts | caveat bullet 1 |
 | Estimated cost only up to 2019; suppressed values are NULL | caveat bullet 2 |
 | Area codes are as of each year; merged codes are missing from `soumu.code.municipality` | caveat bullet 3 |
-| Survey scope (building notices over 10 m²), 18 use categories, row counts | `docs/building_starts/municipality_use.md` |
-| "Municipality rows sum to the national value (measured for all years)" | a validation number: the docs page, not the description |
-| Source and URLs | the 「出典と利用条件」 of `docs/index.md` and `sources` in `dataset.yml` |
+| Survey scope (building notices over 10 m²), 18 use categories, row counts | the table's guide, below the front matter of `municipality_use.md` |
+| "Municipality rows sum to the national value (measured for all years)" | a validation number: the guide, not the description |
+| Source and URLs | the 「出典と利用条件」 of `README.md` and `sources` in `queria.yml` |
 
 ## After
 
@@ -51,16 +51,15 @@ description: |-
 The table list now shows only the first line. A reader who picks the table reads the three
 caveats on the table page, and its 「ガイド」 tab for the rest.
 
-## docs/index.md
+## README.md
 
-With 66 tables, per-table sections would make `docs/index.md` too long. `e_stat`'s
-`docs/index.md` is a table of contents instead: 出典と利用条件, a list of schemas linking to
-`docs/<schema>/index.md`, one SQL example under 使い方, and three caveats that span schemas
-under 注意. Each schema's notes are in `docs/<schema>/index.md`, each table's in
-`docs/<schema>/<table>.md`. The build commands and the one-time import procedure for
-`local_tables.yml` are in the root `README.md`.
+With 66 tables, per-table sections would make `README.md` too long. `e_stat`'s `README.md`
+is a table of contents instead: 出典と利用条件, a list of schemas linking to each schema's
+guide, one SQL example under 使い方, and three caveats that span schemas under 注意. Each
+schema's notes are in the file its `guide:` names, each table's in the guide below the
+table's front matter.
 
 ## The tell
 
 If a table description needs more than three bullets, either the details belong in
-`docs/<schema>/<table>.md`, or the table should be split so the caveat is no longer needed.
+the table's guide, or the table should be split so the caveat is no longer needed.
