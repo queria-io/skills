@@ -1,6 +1,6 @@
 ---
 name: queria-publish-dataset
-description: Publish a dataset of your own to Queria (data.queria.io) — register it, describe it in queria.yml and a Markdown file per table, build it with any tool you like, pack and push. Covers what queria metadata validate refuses and why, licence ids, and the two settings that silently produce a broken dataset. Use when you have data of your own (自分のデータ) and want it in Queria's catalog, or when queria metadata validate / pack, fdl commit or fdl push is failing. Not for querying data that is already published (that is the queria skill), and it does not decide what your descriptions should say (queria-describe-dataset does).
+description: Publish a dataset of your own to Queria (data.queria.io) — register it, describe it in queria.yml and a Markdown file per table, build it with any tool you like, write the description into the version with tabledoc, commit and push. Covers what tabledoc refuses and why, licence ids, and the two settings that silently produce a broken dataset. Use when you have data of your own (自分のデータ) and want it in Queria's catalog, or when tabledoc validate / load, fdl commit or fdl push is failing. Not for querying data that is already published (that is the queria skill), and it does not decide what your descriptions should say (queria-describe-dataset does).
 ---
 
 # Publishing a dataset on Queria
@@ -18,8 +18,8 @@ gets the dataset into the catalog and keeps it there.
 
 ## Before you start
 
-- A shell with the queria CLI (PyPI: `queria`) and fdl (PyPI: `fdl-cli`). With uv no install
-  is needed: `uvx queria`, `uvx --from fdl-cli fdl`. The MCP connector cannot create or push datasets; in a chat without a shell, explain the
+- A shell with the queria CLI (PyPI: `queria`), fdl (PyPI: `fdl-cli`) and tabledoc (PyPI:
+  `tabledoc`). With uv no install is needed: `uvx queria`, `uvx --from fdl-cli fdl`, `uvx tabledoc`. The MCP connector cannot create or push datasets; in a chat without a shell, explain the
   steps below and leave running them to the user.
 - `uvx queria login` — publishing needs an account; reading does not. fdl uses the same token.
 - A build that produces data. Anything that writes into the attached catalog works.
@@ -31,15 +31,18 @@ uvx queria create my-dataset        # register it (private unless you pass --pub
 # write queria.yml and a Markdown file per table
 uvx --from fdl-cli fdl clone https://data.queria.io/datasets/<handle>/my-dataset/ .fdl/work.sqlite
 # run the build, writing into the working catalog (attach it with the statement clone prints)
-FDL_WORKING=.fdl/work.sqlite uvx queria metadata pack   # check, then write .queria/pack/
-uvx --from fdl-cli fdl commit .fdl/work.sqlite --dataset .queria/pack/dataset.json -m "Build" --author <name>
+uvx tabledoc load --ducklake .fdl/work.sqlite --schema _queria --out build/assets   # check, then write the description
+uvx --from fdl-cli fdl commit .fdl/work.sqlite --assets build/assets -m "Build" --author <name>
 uvx --from fdl-cli fdl push .fdl/work.sqlite
 ```
 
-`clone` copies the published version into a working catalog; `pack` checks the description
-against Queria's rules and the data and writes the folder a version is made from
-(dataset.json, README.md, the guides and documents); `commit` freezes the catalog with that
-folder into a new version; `push` uploads it and Queria publishes it. A push is refused
+`clone` copies the published version into a working catalog; `tabledoc load` checks the
+description against the working catalog, writes it into the tables of the `_queria` schema,
+declares the primary keys and asset columns to fdl, and puts README.md, the guides and the
+documents into `build/assets/` (keep that folder outside `.fdl/`); `commit` freezes the
+catalog and those files into a new version; `push` uploads it and Queria checks and
+publishes it. tabledoc writes into `_tabledoc` unless told otherwise, so always give
+`--schema _queria` (or `schema: _queria` in queria.yml). A push is refused
 when someone else pushed after your clone: clone again and rebuild.
 
 Do not ask the user which build tool to standardise on. Use what the repository already
@@ -102,12 +105,12 @@ overview. Other documents are listed in `queria.yml` under `docs:`.
 so they cannot drift from it. Writing them is rejected.
 
 **Declare `primary_key`** with the list of columns that identifies one row.
-`queria metadata validate` reads the data and rejects repeated or NULL key values, so a
-failure there means either the data has duplicates or the declared grain is wrong.
+`tabledoc load` rejects a key column that is not in the working catalog. Check that the values
+are unique and never NULL with your build's tests (in dbt, `unique` and `not_null`); a failure
+there means either the data has duplicates or the declared grain is wrong.
 
-Repositories still on `dataset.yml` and `*.table.yml` keep working with the same commands.
-`queria metadata unpack <folder>` writes a version's description (what `fdl clone` gives, or
-another pack) back into these files, so changes made on Queria come back into the code.
+`tabledoc dump --ducklake .fdl/work.sqlite --schema _queria` writes the description a cloned
+version holds back into these files, so changes made on Queria come back into the code.
 
 ## What to infer, and what to ask
 
@@ -118,21 +121,22 @@ Keep going rather than stopping on thin input, except where a wrong guess is exp
 | `name` | Infer from the directory name, lowercase it, and echo it for confirmation |
 | `language` | The language the *declarations* are written in, not the data. Default `ja` |
 | `title` / `description` | Draft from what the data actually contains, then show it |
-| `licenses` | **Always ask.** Never guess — an id outside the registry stops `validate` |
+| `licenses` | **Always ask.** Never guess — Queria refuses an id outside its registry on push |
 | visibility | Private unless the user explicitly says public. Do not offer to flip it |
 
 ## Errors
 
-`queria metadata validate` (and `pack`) prints `level: source: message [code]`. Read the code, not the prose.
+`tabledoc validate` and `tabledoc load` print `level: where: message [code]`. Read the code, not the prose.
 
 | What you see | Cause | Fix |
 | --- | --- | --- |
-| `licenses-missing` (warning) | No `licenses` | Fine, but the user reserves every right. Confirm they meant to |
-| a license id is rejected | Free text instead of an id | Ask which licence; use the registry id |
-| `attribution-missing` | Licence needs attribution, `contributors` absent | Add `contributors` with `roles: [rightsHolder]` |
 | `schema-violation` | A key the format does not define, often a typo | Fix the key; the message names where |
-| `fdl-rejected`, "described but not in the catalog" | `table:` names a table the build did not make | Fix the name, or build the table |
-| "$schema … update queria" | The file is written for a newer format | `uvx queria@latest` |
+| `table-missing`, `column-missing` | A described table or column is not in the working catalog | Fix the name, or build the table |
+| `primary-key` | A `primary_key` column is not in the table | Fix the key or the build |
+| `asset-type` | A column with `asset: true` is not `varchar` | Store the file's sha256 as text |
+| `link-broken`, `file-missing` | A guide links to, or `docs:` lists, a file that is not there | Fix the path |
+| no `_queria` on Queria after a push | `load` wrote `_tabledoc` | Give `--schema _queria` |
+| Queria refuses the push (licence, attribution, unknown key) | Queria checks the description on push | Fix what the message names, `tabledoc load` and commit again |
 | `fdl commit` refuses inlined rows | DuckLake inlined rows into the catalog | Set `DATA_INLINING_ROW_LIMIT` to 0, as clone's `ATTACH` does |
 | `fdl push` is refused | Someone pushed after your clone | `fdl clone` again and rebuild |
 
@@ -149,7 +153,7 @@ uvx queria sql "SELECT * FROM my-dataset.main.some_table LIMIT 5"
 
 ## Constraints
 
-- Do not hand-edit `dataset.json`. `queria metadata pack` makes it from queria.yml and the table files, and `fdl commit` adds what the data says.
+- Do not write the `_queria` tables by hand. `tabledoc load` makes them from queria.yml and the table files.
 - Do not make a dataset public without being asked to.
 - `queria delete` is immediate. Confirm the name with the user before running it.
 

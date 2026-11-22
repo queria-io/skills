@@ -1,6 +1,6 @@
 ---
 name: queria-describe-dataset
-description: Write short dataset, table and column descriptions for a Queria dataset and put the details in README.md and each table's guide — decide what goes where and how long each is, fix pitfalls in the data's shape before describing them, write keywords, and name columns after schema.org or, for Japanese public data, the government vocabulary (GIF). Use when writing or fixing queria.yml or a table's Markdown (or the older dataset.yml / *.table.yml), keywords, the dataset's README.md (説明・ドキュメント・メタデータの書き方), when naming columns or their Japanese titles (列名・英語名), or when descriptions have grown too long to read. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
+description: Write short dataset, table and column descriptions for a Queria dataset and put the details in README.md and each table's guide — decide what goes where and how long each is, fix pitfalls in the data's shape before describing them, write keywords, and name columns after schema.org or, for Japanese public data, the government vocabulary (GIF). Use when writing or fixing queria.yml or a table's Markdown, keywords, the dataset's README.md (説明・ドキュメント・メタデータの書き方), when naming columns or their Japanese titles (列名・英語名), or when descriptions have grown too long to read. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
 ---
 
 # Describing a Queria dataset
@@ -135,10 +135,6 @@ fields:
 Relative links between these files work on GitHub and on Queria alike. Build and
 maintenance steps go in `CONTRIBUTING.md`, which is not listed in `docs:`.
 
-Repositories still on `dataset.yml`, `*.table.yml` and `docs/` keep working; there the place
-of a file under `docs/` decides where it is shown (`docs/index.md` the dataset,
-`docs/<schema>/index.md` a schema, `docs/<schema>/<table>.md` a table).
-
 ## Naming columns
 
 Column names follow a vocabulary chosen by the kind of data:
@@ -204,7 +200,7 @@ See `references/splitting-a-dataset.md` for a worked before/after on a real data
 - Did SQL, validation numbers or build steps end up in a description?
 - Does every SQL example in the guides and documents run?
 - Is any new column an abbreviation listed in `aliases` in `data_elements.csv`?
-- Does `uvx queria metadata validate` still pass?
+- Does `uvx tabledoc validate` still pass?
 
 Full reference: https://docs.queria.io/publish/writing-descriptions (what goes where) and
 https://docs.queria.io/publish/conventions (names, types, grain, keys) — if this skill and
