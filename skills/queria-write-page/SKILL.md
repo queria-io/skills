@@ -28,7 +28,7 @@ With the CLI:
 
 ```bash
 uvx queria report create report.md              # new report, private, URL printed
-uvx queria report view alice/report -o report.md  # fetch the current Markdown
+uvx queria report view alice/report --out report.md  # fetch the current Markdown
 uvx queria report edit alice/report report.md   # replace the Markdown
 uvx queria report edit alice/report --public    # publish (only when the user asks)
 uvx queria report delete alice/report --yes
