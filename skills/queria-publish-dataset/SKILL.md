@@ -27,7 +27,7 @@ gets the dataset into the catalog and keeps it there.
 ## The loop
 
 ```bash
-uvx queria create my-dataset        # register it (private unless you pass --public)
+uvx queria dataset create my-dataset  # register it (private unless you pass --public)
 # write tabledoc.yml and a <table>.tabledoc.yml per table
 uvx --from fdl-cli fdl clone https://data.queria.io/datasets/<handle>/my-dataset/ .fdl/work.sqlite
 # run the build, writing into the working catalog (attach it with the statement clone prints)
@@ -158,7 +158,7 @@ uvx queria sql "SELECT * FROM my-dataset.main.some_table LIMIT 5"
 
 - Do not write the `_tabledoc` tables by hand. `tabledoc load` makes them from tabledoc.yml and the table files.
 - Do not make a dataset public without being asked to.
-- `queria delete` is immediate. Confirm the name with the user before running it.
+- `queria dataset delete` is immediate. Confirm the name with the user before running it.
 
 Full reference: https://docs.queria.io/publish
 
