@@ -33,9 +33,9 @@ one line.
 | Ward rows are a breakdown of designated cities; summing without `area_level` double-counts | caveat bullet 1 |
 | Estimated cost only up to 2019; suppressed values are NULL | caveat bullet 2 |
 | Area codes are as of each year; merged codes are missing from `soumu.code.municipality` | caveat bullet 3 |
-| Survey scope (building notices over 10 m²), 18 use categories, row counts | the table's guide, below the front matter of `municipality_use.md` |
+| Survey scope (building notices over 10 m²), 18 use categories, row counts | the table's guide, `municipality_use.md` |
 | "Municipality rows sum to the national value (measured for all years)" | a validation number: the guide, not the description |
-| Source and URLs | the 「出典と利用条件」 of `README.md` and `sources` in `queria.yml` |
+| Source and URLs | the 「出典と利用条件」 of `README.md` and `sources` in `tabledoc.yml` |
 
 ## After
 
@@ -56,8 +56,8 @@ caveats on the table page, and its 「ガイド」 tab for the rest.
 With 66 tables, per-table sections would make `README.md` too long. `e_stat`'s `README.md`
 is a table of contents instead: 出典と利用条件, a list of schemas linking to each schema's
 guide, one SQL example under 使い方, and three caveats that span schemas under 注意. Each
-schema's notes are in the file its `guide:` names, each table's in the guide below the
-table's front matter.
+schema's notes are in the `README.md` its `documents:` lists, each table's in the table's
+guide.
 
 ## The tell
 

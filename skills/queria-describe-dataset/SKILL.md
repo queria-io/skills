@@ -1,14 +1,14 @@
 ---
 name: queria-describe-dataset
-description: Write short dataset, table and column descriptions for a Queria dataset and put the details in README.md and each table's guide — decide what goes where and how long each is, fix pitfalls in the data's shape before describing them, write keywords, and name columns after schema.org or, for Japanese public data, the government vocabulary (GIF). Use when writing or fixing queria.yml or a table's Markdown, keywords, the dataset's README.md (説明・ドキュメント・メタデータの書き方), when naming columns or their Japanese titles (列名・英語名), or when descriptions have grown too long to read. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
+description: Write short dataset, table and column descriptions for a Queria dataset and put the details in README.md and each table's guide — decide what goes where and how long each is, fix pitfalls in the data's shape before describing them, write keywords, and name columns after schema.org or, for Japanese public data, the government vocabulary (GIF). Use when writing or fixing tabledoc.yml or a table's .tabledoc.yml file, keywords, the dataset's README.md (説明・ドキュメント・メタデータの書き方), when naming columns or their Japanese titles (列名・英語名), or when descriptions have grown too long to read. Not for getting a dataset built or published (queria-publish-dataset), and not for exploring data that is already published (queria).
 ---
 
 # Describing a Queria dataset
 
 A Queria dataset has these places to write down what you know: the `description` of the
-dataset (in `queria.yml`), of each table and of each column (in the front matter of the
-table's Markdown file), the text below that front matter (the table's guide), the root
-`README.md` (the dataset's overview) and other documents listed in `queria.yml`.
+dataset (in `tabledoc.yml`), of each table and of each column (in the table's
+`<table>.tabledoc.yml`), the table's guide (`<table>.md` beside it), the root `README.md`
+(the dataset's overview) and other documents listed under `documents:`.
 Descriptions appear as-is in lists and search results, so they stay short. Everything else
 goes in the guides and documents.
 
@@ -19,13 +19,13 @@ goes where, and how long it is**.
 
 | Where | What | Length |
 | --- | --- | --- |
-| Dataset `description` (`queria.yml`) | What the data is, and its source | 1–2 sentences plus 1 on the source (about 100 Japanese characters) |
-| Table `description` (front matter) | What one row represents, what is easy to get wrong | A 1-sentence summary (about 80 characters), a blank line, up to 3 caveat bullets |
-| Column `description` (front matter) | Definition, unit, code system | About 50 characters |
+| Dataset `description` (`tabledoc.yml`) | What the data is, and its source | 1–2 sentences plus 1 on the source (about 100 Japanese characters) |
+| Table `description` (`<table>.tabledoc.yml`) | What one row represents, what is easy to get wrong | A 1-sentence summary (about 80 characters), a blank line, up to 3 caveat bullets |
+| Column `description` (`<table>.tabledoc.yml`) | Definition, unit, code system | About 50 characters |
 | `README.md` | Source and license, table list, example SQL, caveats that span several tables | No limit |
-| A schema's `guide:` file | Notes on a schema and SQL that spans its tables | No limit |
-| The table's guide (below its front matter) | SQL examples and caveats for one table | No limit |
-| Files listed in `docs:` | Guides that span schemas | No limit |
+| A schema's `README.md` (listed in its `documents:`) | Notes on a schema and SQL that spans its tables | No limit |
+| The table's guide (`<table>.md`) | SQL examples and caveats for one table | No limit |
+| Files listed in the dataset's `documents:` | Guides that span schemas | No limit |
 
 Table lists and search results show only the **first paragraph** of a table description.
 Write the summary so a reader can decide from it alone whether to use the table.
@@ -50,7 +50,7 @@ Pick the smallest thing the sentence is true of.
 | --- | --- |
 | One column | that column's `description` |
 | One table | that table's `description` (or its guide, if it does not fit in 3 bullets) |
-| More than one table | the 「注意」 of `README.md` (or the schema's `guide:` file within one schema) |
+| More than one table | the 「注意」 of `README.md` (or the schema's `README.md` within one schema) |
 | What people call this dataset | `keywords` |
 | Something you can run as SQL | the 「使い方」 of `README.md`, or the guide of that table or schema |
 
@@ -73,7 +73,7 @@ suppression, coverage, the source's own inconsistencies.
 
 - Validation numbers ("matches the national total", "0 mismatches") → dbt tests, or `CONTRIBUTING.md`
 - Full license text → `licenses` and the 「出典と利用条件」 of `README.md`
-- Processing and build steps → `CONTRIBUTING.md` (not listed in `docs:`)
+- Processing and build steps → `CONTRIBUTING.md` (not listed in `documents:`)
 - Runnable SQL → the 「使い方」 of `README.md`, or a guide
 
 ## README.md layout
@@ -83,7 +83,7 @@ repository's front page. Use this order:
 
 1. `# <dataset title>` and 1–2 sentences on what the data is
 2. `## 出典と利用条件` — links to the sources and the terms of use
-3. `## テーブル` — table name, contents and row count. Link each table to its Markdown file
+3. `## テーブル` — table name, contents and row count. Link each table to its guide
 4. `## 使い方` — SQL that runs as-is against the published dataset
 5. `## 注意` — caveats that span several tables
 
@@ -91,49 +91,47 @@ Write the columns, grain and caveats of each table in the table's guide.
 
 ## Where the files go
 
-A table's Markdown file names its table in `table:`, so it can sit anywhere: next to the dbt
-model that builds it is easiest to keep in step. Other documents sit wherever you like and
-are listed in `queria.yml`; nothing is decided by where a file is.
+A table's file is named after its table: `census/census_municipality.tabledoc.yml`
+describes `census.census_municipality`, and `census_municipality.md` beside it is its guide.
+With dbt, put them next to the model's `.sql` as `<model>.tabledoc.yml` and `<model>.md`; the
+model's `schema` and `alias` name the table. Other documents sit wherever you like and are
+listed under `documents:` of the dataset, a schema or a table. A document named `README.md`
+describes what it is listed under.
 
 ```yaml
-# queria.yml
+# tabledoc.yml
 schemas:
   - name: census
     title: 国勢調査
-    guide: docs/census.md        # shown on the schema page
-docs: [docs/catalog.md]          # shown on the 「ドキュメント」 tab, in this order
+    documents: [docs/census/README.md]   # shown on the schema page
+documents: [docs/catalog.md]             # shown on the 「ドキュメント」 tab, in this order
 ```
 
 ```text
-README.md                                   # the dataset's overview
-queria.yml
+README.md                                          # the dataset's overview
+tabledoc.yml
 docs/
-  catalog.md                                # a guide that spans schemas
-  census.md                                 # the census schema
+  catalog.md                                       # a guide that spans schemas
+  census/README.md                                 # the census schema
 models/census/census_municipality.sql
-models/census/census_municipality.md        # census.census_municipality: description and guide
+models/census/census_municipality.tabledoc.yml     # census.census_municipality: description
+models/census/census_municipality.md               # its guide
 ```
 
-```markdown
----
-$schema: https://queria.io/schemas/table/v1.json
-table: census.census_municipality
+```yaml
+# models/census/census_municipality.tabledoc.yml
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
 title: 市区町村別人口
 description: |-
   国勢調査の市区町村別の男女別人口です。1 行が 1 市区町村の 1 回の調査です。
-fields:
+columns:
   - name: area
     title: 地域コード
-    semantic: {role: entity, name: city}
----
-
-## 使い方
-
-…
+    entity: {type: foreign, name: city}
 ```
 
 Relative links between these files work on GitHub and on Queria alike. Build and
-maintenance steps go in `CONTRIBUTING.md`, which is not listed in `docs:`.
+maintenance steps go in `CONTRIBUTING.md`, which is not listed in `documents:`.
 
 ## Naming columns
 
@@ -151,7 +149,7 @@ Column names follow a vocabulary chosen by the kind of data:
 `.../entities.csv`. Each row of `data_elements.csv` is one data element (what a column
 represents): `name` (the name for Japanese public data), `title`, `schema_org`, `gif_term`,
 `imi_term`, the `entity` it identifies, and `aliases` (other names in use for it).
-`entities.csv` lists the names allowed in `semantic: { role: entity, name: ... }`.
+`entities.csv` lists the names allowed in `entity: { type: ..., name: ... }`.
 
 1. The element is in `data_elements.csv` → use `name` for Japanese public data, or `schema_org`
    in snake_case for general data (falling back to `name`), plus its `title` and `entity`
@@ -163,7 +161,7 @@ Do not rename existing columns just to match. Abbreviations such as `lat` or `pr
 are the exception: add the new column beside the old one, mark the old one deprecated in
 its `description`, and drop it later — never rename in place.
 
-Column names differ; `semantic` entity names do not. Cross-dataset joins follow the entity
+Column names differ; `entity` names do not. Cross-dataset joins follow the entity
 name, so the name of the column does not matter to them.
 
 ## keywords
