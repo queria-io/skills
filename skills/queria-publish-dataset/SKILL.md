@@ -1,6 +1,6 @@
 ---
 name: queria-publish-dataset
-description: Publish a dataset of your own to Queria (data.queria.io) — register it, describe it in queria.yml and a Markdown file per table, build it with any tool you like, write the description into the version with tabledoc, commit and push. Covers what tabledoc refuses and why, licence ids, and the two settings that silently produce a broken dataset. Use when you have data of your own (自分のデータ) and want it in Queria's catalog, or when tabledoc validate / load, fdl commit or fdl push is failing. Not for querying data that is already published (that is the queria skill), and it does not decide what your descriptions should say (queria-describe-dataset does).
+description: Publish a dataset of your own to Queria (data.queria.io) — register it, describe it in tabledoc.yml and one .tabledoc.yml file per table, build it with any tool you like, write the description into the version with tabledoc, commit and push. Covers what tabledoc refuses and why, licence ids, and the two settings that silently produce a broken dataset. Use when you have data of your own (自分のデータ) and want it in Queria's catalog, or when tabledoc validate / load, fdl commit or fdl push is failing. Not for querying data that is already published (that is the queria skill), and it does not decide what your descriptions should say (queria-describe-dataset does).
 ---
 
 # Publishing a dataset on Queria
@@ -28,22 +28,21 @@ gets the dataset into the catalog and keeps it there.
 
 ```bash
 uvx queria create my-dataset        # register it (private unless you pass --public)
-# write queria.yml and a Markdown file per table
+# write tabledoc.yml and a <table>.tabledoc.yml per table
 uvx --from fdl-cli fdl clone https://data.queria.io/datasets/<handle>/my-dataset/ .fdl/work.sqlite
 # run the build, writing into the working catalog (attach it with the statement clone prints)
-uvx tabledoc load --ducklake .fdl/work.sqlite --schema _queria --out build/assets   # check, then write the description
+uvx tabledoc load --ducklake .fdl/work.sqlite --out build/assets   # check, then write the description
 uvx --from fdl-cli fdl commit .fdl/work.sqlite --assets build/assets -m "Build" --author <name>
 uvx --from fdl-cli fdl push .fdl/work.sqlite
 ```
 
 `clone` copies the published version into a working catalog; `tabledoc load` checks the
-description against the working catalog, writes it into the tables of the `_queria` schema,
+description against the working catalog, writes it into the tables of the `_tabledoc` schema,
 declares the primary keys and asset columns to fdl, and puts README.md, the guides and the
 documents into `build/assets/` (keep that folder outside `.fdl/`); `commit` freezes the
 catalog and those files into a new version; `push` uploads it and Queria checks and
-publishes it. tabledoc writes into `_tabledoc` unless told otherwise, so always give
-`--schema _queria` (or `schema: _queria` in queria.yml). A push is refused
-when someone else pushed after your clone: clone again and rebuild.
+publishes it. A push is refused when someone else pushed after your clone: clone again and
+rebuild.
 
 Do not ask the user which build tool to standardise on. Use what the repository already
 has; if there is nothing, the smallest thing that writes a table is enough.
@@ -61,45 +60,49 @@ Views are fine for intermediate steps you do not declare.
 
 ## The description
 
-Two kinds of file. Each names its format in `$schema`, and only files that do are read.
+The description is written in the tabledoc format (https://tabledoc.queria.io). Each file
+names its format in `$schema`.
 
 | File | Content |
 | --- | --- |
-| `queria.yml` (repository root) | the dataset itself |
-| a Markdown file per table (any name, anywhere) | the table's description in the front matter, its guide below |
+| `tabledoc.yml` (repository root) | the dataset as a whole |
+| `<schema>/<table>.tabledoc.yml` | the table and its columns |
+| `<schema>/<table>.md` (optional) | the table's guide |
 
 ```yaml
-# queria.yml
-$schema: https://queria.io/schemas/dataset/v1.json
+# tabledoc.yml
+$schema: https://tabledoc.queria.io/schemas/dataset/v1.json
 name: calendar
 title: Japanese calendar
 description: A date spine from 1955 to 2027 with holidays, weekdays and Japanese eras.
 language: ja
 licenses: [CC-BY-4.0]
 contributors:
-  - title: Cabinet Office
+  - id: cao
+    title: Cabinet Office
     roles: [rightsHolder]
 ```
 
-```markdown
----
-$schema: https://queria.io/schemas/table/v1.json
-table: calendar.day
+```yaml
+# calendar/day.tabledoc.yml
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
 title: Japanese calendar
+description: One row per day, with holidays, weekdays, Japanese eras and fiscal years.
 primary_key: [date]
-fields:
+columns:
   - name: date
     title: Date
-    semantic: {role: entity, name: date}
----
-
-Holidays follow the Cabinet Office's list.
 ```
 
-`table:` says which table the file describes, so put it where it is easiest to keep in step,
-such as next to the dbt model. Keys only Queria reads (themes, cover, a column's `semantic`,
-`published`) sit at the same level as the rest. The root `README.md` is the dataset's
-overview. Other documents are listed in `queria.yml` under `docs:`.
+The file's name and place say which table it describes: `calendar/day.tabledoc.yml`
+describes `calendar.day`, and `calendar/day.md` beside it is the table's guide. With dbt, put
+`<model>.tabledoc.yml` and `<model>.md` next to the model's `.sql` (the model's `schema` and
+`alias` name the table) and list `*.tabledoc.yml` in `.dbtignore`. Keep dbt's yml to what
+the build needs, such as tests: the same key in dbt's yml and the table file is an error.
+
+The root `README.md` is the dataset's overview. Other documents are listed by path under
+`documents:` of the dataset, a schema or a table. `listed: false` keeps a table out of lists
+and search.
 
 **Never write column types.** Types, column order and nullability are read from the data,
 so they cannot drift from it. Writing them is rejected.
@@ -109,7 +112,7 @@ so they cannot drift from it. Writing them is rejected.
 are unique and never NULL with your build's tests (in dbt, `unique` and `not_null`); a failure
 there means either the data has duplicates or the declared grain is wrong.
 
-`tabledoc dump --ducklake .fdl/work.sqlite --schema _queria` writes the description a cloned
+`tabledoc dump --ducklake .fdl/work.sqlite` writes the description a cloned
 version holds back into these files, so changes made on Queria come back into the code.
 
 ## What to infer, and what to ask
@@ -134,8 +137,8 @@ Keep going rather than stopping on thin input, except where a wrong guess is exp
 | `table-missing`, `column-missing` | A described table or column is not in the working catalog | Fix the name, or build the table |
 | `primary-key` | A `primary_key` column is not in the table | Fix the key or the build |
 | `asset-type` | A column with `asset: true` is not `varchar` | Store the file's sha256 as text |
-| `link-broken`, `file-missing` | A guide links to, or `docs:` lists, a file that is not there | Fix the path |
-| no `_queria` on Queria after a push | `load` wrote `_tabledoc` | Give `--schema _queria` |
+| `link-broken`, `file-missing` | A guide links to, or `documents:` lists, a file that is not there | Fix the path |
+| Queria refuses the push, naming `_queria` or an older `_tabledoc` | The version was loaded with an old tabledoc or `--schema _queria` | Upgrade tabledoc, run `tabledoc load` without `--schema`, commit and push again |
 | Queria refuses the push (licence, attribution, unknown key) | Queria checks the description on push | Fix what the message names, `tabledoc load` and commit again |
 | `fdl commit` refuses inlined rows | DuckLake inlined rows into the catalog | Set `DATA_INLINING_ROW_LIMIT` to 0, as clone's `ATTACH` does |
 | `fdl push` is refused | Someone pushed after your clone | `fdl clone` again and rebuild |
@@ -153,7 +156,7 @@ uvx queria sql "SELECT * FROM my-dataset.main.some_table LIMIT 5"
 
 ## Constraints
 
-- Do not write the `_queria` tables by hand. `tabledoc load` makes them from queria.yml and the table files.
+- Do not write the `_tabledoc` tables by hand. `tabledoc load` makes them from tabledoc.yml and the table files.
 - Do not make a dataset public without being asked to.
 - `queria delete` is immediate. Confirm the name with the user before running it.
 
