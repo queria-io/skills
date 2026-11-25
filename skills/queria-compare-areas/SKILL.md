@@ -113,7 +113,7 @@ ones.
   layer of 9 and 11 digits without overlap, and keeping only `small_area` drops the 丁目-split
   areas (about 64% of the population). Sex and age are both in `cat01` / `age_class`, and
   `cat01` holds the 総数, 5-year bands and the 15歳未満 / 15〜64 / 65歳以上 groups side by side;
-  pick codes that do not overlap. The column named `sex` is the 秘匿・合算 flag, not 男女.
+  pick codes that do not overlap. The `secrecy` column is the 秘匿・合算 flag.
   秘匿 rows hold 0 — those people are counted in a neighbouring 合算 area, so a 0 there does
   not mean nobody lives there.
 - Area codes differ by table: 5-digit standard area codes (e_stat) vs 6-digit 全国地方公共団体コード
